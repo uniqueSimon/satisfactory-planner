@@ -9,10 +9,7 @@ export const RecipeTooltip = (props: { recipe: Recipe; rate: number }) => {
   const ingredients = props.recipe.ingredients;
   return (
     <Tooltip
-      overlayStyle={{
-        whiteSpace: "nowrap",
-        maxWidth: "none",
-      }}
+      styles={{ root: { whiteSpace: "nowrap", maxWidth: "none" } }}
       title={
         <div style={{ display: "flex", alignItems: "center" }}>
           {ingredients.map((ingredient, i) => {

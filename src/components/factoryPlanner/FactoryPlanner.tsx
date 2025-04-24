@@ -1,4 +1,5 @@
 import { Form, Switch } from "antd";
+import { CustomCard } from "@/reusableComp/CustomCard";
 import { useState } from "react";
 import { FactoryCluster } from "./FactoryCluster";
 import { DetailedView } from "./DetailedView";
@@ -6,7 +7,6 @@ import { calculateFactoryDetails } from "./calculateFactoryDetails";
 import { accumulateRates } from "./accumulateRates";
 import { Copy, SquarePlus, Trash, X } from 'lucide-react';
 import { Button } from "@/reusableComp/Button";
-import { CustomCard } from "../../reusableComp/CustomCard";
 
 export interface SavedFactory {
   id: number;
