@@ -1,5 +1,5 @@
+import { SavedFactory } from "@/interfaces";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
-import { SavedFactory } from "./FactoryPlanner";
 
 export const DetailedView = (props: { savedSetting: SavedFactory }) => {
   return (

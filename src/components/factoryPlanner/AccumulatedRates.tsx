@@ -1,8 +1,8 @@
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { Collapse, Tooltip } from "antd";
-import { SavedFactory } from "./FactoryPlanner";
 import { RateBalance } from "./accumulateRates";
 import { maxRates } from "@/calculateProductWeights";
+import { SavedFactory } from "@/interfaces";
 
 export const AccumulatedRates = (props: {
   cluster: SavedFactory[];

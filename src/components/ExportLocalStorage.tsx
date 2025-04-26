@@ -1,7 +1,7 @@
-import { SavedFactory } from "./factoryPlanner/FactoryPlanner";
+import { Cluster } from "@/interfaces";
 
 const exportJson = (json: {
-  savedFactories: SavedFactory[][];
+  savedFactories: Cluster[];
   foundAltRecipes: string[];
 }) => {
   const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -14,7 +14,7 @@ const exportJson = (json: {
 };
 
 export const ExportLocalStorage = (props: {
-  savedFactories: SavedFactory[][];
+  savedFactories: Cluster[];
   foundAltRecipes: string[];
 }) => {
   const handleClick = () => exportJson(props);

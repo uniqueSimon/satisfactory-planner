@@ -1,6 +1,6 @@
 import { Tooltip } from "antd";
-import { Recipe } from "../App";
 import { IconWithTooltip } from "./IconWithTooltip";
+import { Recipe } from "@/interfaces";
 
 export const RecipeTooltip = (props: { recipe: Recipe; rate: number }) => {
   if (!props.recipe) {

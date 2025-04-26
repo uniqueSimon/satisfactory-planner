@@ -1,7 +1,7 @@
+import { SavedFactory } from "@/interfaces";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { useDraggable } from "@/reusableComp/useDraggable";
 import { Button } from "antd";
-import { SavedFactory } from "./FactoryPlanner";
 
 export const Factory = (props: {
   factory: SavedFactory;

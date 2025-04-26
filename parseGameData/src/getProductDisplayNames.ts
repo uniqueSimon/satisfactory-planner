@@ -1,4 +1,3 @@
-import fs from "fs";
 import gameData from "./gameData.json";
 
 interface ItemClass {

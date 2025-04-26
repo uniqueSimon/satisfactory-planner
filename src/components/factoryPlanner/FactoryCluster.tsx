@@ -1,12 +1,12 @@
-import { SavedFactory } from "./FactoryPlanner";
-import { Button } from "antd";
+import { Button, Card, Input } from "antd";
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { AccumulatedRates } from "./AccumulatedRates";
 import { useEffect, useRef, useState } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Factory } from "./Factory";
 import { RateBalance } from "./accumulateRates";
-import { X } from "lucide-react";
+import { Pencil, Save, X } from "lucide-react";
+import { Cluster, SavedFactory } from "@/interfaces";
 
 const useDropable = (
   cluster: SavedFactory[],
@@ -28,12 +28,12 @@ const useDropable = (
 };
 
 export const FactoryCluster = (props: {
-  cluster: SavedFactory[];
+  cluster: Cluster;
   selectedFactoryId?: number;
   rateBalance: RateBalance[];
   showResources: boolean;
   hoveredFactoryId?: number | null;
-  updateCluster: (cluster: SavedFactory[]) => void;
+  updateCluster: (cluster: Cluster) => void;
   onChooseFactory: (id: number) => void;
   setHoveredFactoryId: (id?: number | null) => void;
   onDropIntoCluster: (sourceId: number) => void;
@@ -42,11 +42,14 @@ export const FactoryCluster = (props: {
   const [hoveredAccumulatedProduct, setHoveredAccumulatedProduct] = useState<
     string | null
   >(null);
-  const refDropable = useDropable(props.cluster, props.onDropIntoCluster);
-  const selectedFactory = props.cluster.find(
+  const refDropable = useDropable(
+    props.cluster.factories,
+    props.onDropIntoCluster
+  );
+  const selectedFactory = props.cluster.factories.find(
     (x) => x.id === props.selectedFactoryId
   );
-  const hoveredFactory = props.cluster.find(
+  const hoveredFactory = props.cluster.factories.find(
     (x) => x.id === props.hoveredFactoryId
   );
   const onMoveCard = (
@@ -54,28 +57,47 @@ export const FactoryCluster = (props: {
     targetId: number,
     closestEdge: "left" | "right"
   ) => {
-    const sourceIndex = props.cluster.findIndex((x) => x.id === sourceId);
-    const targetIndex = props.cluster.findIndex((x) => x.id === targetId);
+    const sourceIndex = props.cluster.factories.findIndex(
+      (x) => x.id === sourceId
+    );
+    const targetIndex = props.cluster.factories.findIndex(
+      (x) => x.id === targetId
+    );
     if (sourceIndex === -1) {
       //comes from another factory cluster
       return;
     }
     const insertionIndex =
       closestEdge === "left" ? targetIndex : targetIndex + 1;
-    const firstPart = props.cluster
+    const firstPart = props.cluster.factories
       .slice(0, insertionIndex)
       .filter((x) => x.id !== sourceId);
-    const lastPart = props.cluster
+    const lastPart = props.cluster.factories
       .slice(insertionIndex)
       .filter((x) => x.id !== sourceId);
-    props.updateCluster([
-      ...firstPart,
-      props.cluster[sourceIndex],
-      ...lastPart,
-    ]);
+    props.updateCluster({
+      ...props.cluster,
+      factories: [
+        ...firstPart,
+        props.cluster.factories[sourceIndex],
+        ...lastPart,
+      ],
+    });
   };
   return (
-    <CustomCard>
+    <Card
+      title={
+        <div className="flex justify-between">
+          <EditableTitle
+            title={props.cluster.title}
+            submit={(title) => props.updateCluster({ ...props.cluster, title })}
+          />
+          <Button onClick={props.onRemoveCluster}>
+            <X />
+          </Button>
+        </div>
+      }
+    >
       <div
         ref={refDropable}
         style={{
@@ -85,7 +107,7 @@ export const FactoryCluster = (props: {
         }}
       >
         <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {props.cluster.map((factory) => (
+          {props.cluster.factories.map((factory) => (
             <Factory
               key={factory.id}
               factory={factory}
@@ -100,17 +122,20 @@ export const FactoryCluster = (props: {
             <Button
               onClick={() => {
                 const now = Date.now();
-                props.updateCluster([
+                props.updateCluster({
                   ...props.cluster,
-                  {
-                    id: now,
-                    productToProduce: "",
-                    wantedOutputRate: 0,
-                    selectedRecipes: [],
-                    dedicatedProducts: [],
-                    input: [],
-                  },
-                ]);
+                  factories: [
+                    ...props.cluster.factories,
+                    {
+                      id: now,
+                      productToProduce: "",
+                      wantedOutputRate: 0,
+                      selectedRecipes: [],
+                      dedicatedProducts: [],
+                      input: [],
+                    },
+                  ],
+                });
                 props.onChooseFactory(now);
               }}
             >
@@ -118,18 +143,47 @@ export const FactoryCluster = (props: {
             </Button>
           </div>
         </div>
-        <Button onClick={props.onRemoveCluster}>
-          <X />
-        </Button>
       </div>
       <AccumulatedRates
         showResources={props.showResources}
         rateBalance={props.rateBalance}
-        cluster={props.cluster}
+        cluster={props.cluster.factories}
         selectedFactory={selectedFactory}
         hoveredFactory={hoveredFactory}
         setHoveredAccumulatedProduct={setHoveredAccumulatedProduct}
       />
-    </CustomCard>
+    </Card>
+  );
+};
+
+const EditableTitle = (props: {
+  title: string;
+  submit: (title: string) => void;
+}) => {
+  const [editMode, setEditMode] = useState(false);
+  const [current, setCurrent] = useState(props.title);
+  return editMode ? (
+    <div className="flex gap-2 items-center">
+      <Input
+        style={{ width: 300 }}
+        value={current}
+        onChange={(e) => setCurrent(e.target.value)}
+      />
+      <Save
+        className="cursor-pointer transition-colors duration-200 hover:bg-gray-200"
+        onClick={() => {
+          props.submit(current);
+          setEditMode(false);
+        }}
+      />
+    </div>
+  ) : (
+    <div className="flex gap-2 items-center">
+      {props.title}
+      <Pencil
+        className="cursor-pointer transition-colors duration-200 hover:bg-gray-200"
+        onClick={() => setEditMode(true)}
+      />
+    </div>
   );
 };

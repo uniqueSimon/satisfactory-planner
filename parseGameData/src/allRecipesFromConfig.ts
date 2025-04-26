@@ -88,12 +88,15 @@ for (const item of recipeNativeClass!.Classes) {
   const recipeName = item.ClassName.split("_").slice(1, -1).join("_");
   const displayName = item.mDisplayName;
   const fullName = item.FullName;
+  if(fullName==='BlueprintGeneratedClass /Game/FactoryGame/Equipment/Rifle/Ammo/Recipe_CartridgeSmart.Recipe_CartridgeSmart_C'){
+    console.log('found!!')
+  }
   const categoryMatching =
-    /BlueprintGeneratedClass \/Game\/FactoryGame\/Recipes\/(.*)/.exec(fullName);
+    /BlueprintGeneratedClass \/Game\/FactoryGame\/(?:Recipes|Equipment)\/(.*)/.exec(fullName);
   if (
     categoryMatching &&
     !categoryMatching[1].includes("Buildings") &&
-    !categoryMatching[1].includes("Equipment") &&
+    //!categoryMatching[1].includes("Equipment") &&
     !categoryMatching[1].includes("Vehicle")
   ) {
     const ingredients = getIngredients(item.mIngredients);

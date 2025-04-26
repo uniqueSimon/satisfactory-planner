@@ -1,7 +1,7 @@
-import { SavedFactory } from "./factoryPlanner/FactoryPlanner";
+import { Cluster } from "@/interfaces";
 
 export const ImportLocalStorage = (props: {
-  setSavedFactories: (savedFactories: SavedFactory[][]) => void;
+  setSavedFactories: (savedFactories: Cluster[]) => void;
   setFoundAltRecipes: (foundAltRecipes: string[]) => void;
 }) => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {

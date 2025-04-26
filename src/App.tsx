@@ -1,8 +1,5 @@
 import { Form, Select, Typography } from "antd";
-import {
-  FactoryPlanner,
-  SavedFactory,
-} from "./components/factoryPlanner/FactoryPlanner";
+import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
 import { useLocalStorage } from "./reusableComp/useLocalStorage";
 import { useState } from "react";
 import { FactoryDetails } from "./components/factoryDetails/FactoryDetails";
@@ -13,6 +10,7 @@ import allRecipesJson from "./gameData/allRecipes.json";
 import displayNamesJson from "./gameData/displayNames.json";
 import { ExportLocalStorage } from "./components/ExportLocalStorage";
 import { ImportLocalStorage } from "./components/ImportLocalStorage";
+import { Cluster } from "./interfaces";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -20,21 +18,10 @@ export const productDisplayNameMapping = new Map(
   displayNamesJson as [string, string][]
 );
 
-export interface Recipe {
-  recipeName: string;
-  displayName: string;
-  product: { name: string; amount: number };
-  ingredients: { name: string; amount: number }[];
-  time: number;
-  isAlternate: boolean;
-  producedIn: string;
-  tier: number;
-}
-
 export const App = () => {
-  const [savedFactories, setSavedFactories] = useLocalStorage<SavedFactory[][]>(
+  const [savedFactories, setSavedFactories] = useLocalStorage<Cluster[]>(
     "saved-factories",
-    [[]]
+    []
   );
   const [foundAltRecipes, setFoundAltRecipes] = useLocalStorage<string[]>(
     "found-alt-recipes",
@@ -43,7 +30,7 @@ export const App = () => {
   const [clickedFactoryId, setClickedFactoryId] = useState<number>();
   const [excludedResources, setExcludedResources] = useState([]);
 
-  const combinedSavedFactories = savedFactories.flat();
+  const combinedSavedFactories = savedFactories.map((x) => x.factories).flat();
   const selectedSavedSettings = combinedSavedFactories.find(
     (x) => x.id === clickedFactoryId
   );
@@ -78,12 +65,13 @@ export const App = () => {
             savedFactory={selectedSavedSettings}
             weights={weights}
             setSavedFactory={(savedFactory) =>
-              setSavedFactories((prev) =>
-                prev.map((cluster) =>
-                  cluster.map((factory) =>
+              setSavedFactories(
+                savedFactories.map((cluster) => ({
+                  ...cluster,
+                  factories: cluster.factories.map((factory) =>
                     factory.id === clickedFactoryId ? savedFactory : factory
-                  )
-                )
+                  ),
+                }))
               )
             }
           />

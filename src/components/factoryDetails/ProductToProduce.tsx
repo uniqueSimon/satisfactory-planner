@@ -35,10 +35,12 @@ export const ProductToProduce = (props: {
         value={props.productToProduce}
         onChange={props.setProductToProduce}
         filterOption={(input, option) =>
-          productDisplayNameMapping
-            .get(option!.value)!
-            .toLowerCase()
-            .includes(input.toLowerCase())
+          productDisplayNameMapping.get(option!.value)
+            ? productDisplayNameMapping
+                .get(option!.value)!
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            : false
         }
       />
     </Form.Item>

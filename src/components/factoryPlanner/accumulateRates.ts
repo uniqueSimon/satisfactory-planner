@@ -1,20 +1,18 @@
-import { SavedFactory } from "./FactoryPlanner";
+import { Cluster } from "@/interfaces";
 
 export interface RateBalance {
   rateFromOtherClusters: number;
   product: string;
   rate: number;
 }
-export const accumulateRates = (
-  savedFactories: SavedFactory[][]
-): RateBalance[][] => {
+export const accumulateRates = (savedFactories: Cluster[]): RateBalance[][] => {
   const ratesPerCluster = savedFactories.map((cluster) => {
     const accumulatedRates = new Map<string, number>();
     const accumulate = (product: string, rate: number) => {
       const existing = accumulatedRates.get(product);
       accumulatedRates.set(product, (existing ?? 0) + rate);
     };
-    for (const factory of cluster) {
+    for (const factory of cluster.factories) {
       accumulate(factory.productToProduce, factory.wantedOutputRate);
       for (const input of factory.input) {
         accumulate(input.product, -input.rate);

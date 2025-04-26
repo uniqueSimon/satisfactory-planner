@@ -1,7 +1,8 @@
 import { Button, Collapse, Form, Select, Switch, Table } from "antd";
-import { allProducts, allRecipes, Recipe } from "@/App";
+import { allProducts, allRecipes } from "@/App";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { useState } from "react";
+import { Recipe } from "@/interfaces";
 
 export const AlternateRecipes = (props: {
   foundAltRecipes: string[];

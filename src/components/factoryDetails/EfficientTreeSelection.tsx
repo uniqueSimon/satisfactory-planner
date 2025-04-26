@@ -1,8 +1,8 @@
 import { Select } from "antd";
-import { Recipe } from "../../App";
 import { RecipeTooltip } from "../../reusableComp/RecipeTooltip";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { DownCircleOutlined } from "@ant-design/icons";
+import { Recipe } from "@/interfaces";
 
 export const EfficientTreeSelection = (props: {
   productToProduce: string;
@@ -18,6 +18,7 @@ export const EfficientTreeSelection = (props: {
       weight: number;
     }[]
   >;
+  showWp: boolean;
 }) => {
   const Recursion = (propsRec: { product: string; rate: number }) => {
     const recipes = props.availableRecipes.filter(
@@ -42,6 +43,7 @@ export const EfficientTreeSelection = (props: {
                 : "hsl(0,0%,60%)"
             }
             weight={minWeight}
+            showWp={props.showWp}
           />
         </div>
       );
@@ -59,6 +61,7 @@ export const EfficientTreeSelection = (props: {
             index > -1 ? `hsl(${(index * 200) % 360},20%,60%)` : "lightgray"
           }
           weight={minWeight}
+          showWp={props.showWp}
         />
         <RecipeSelection
           currentRecipe={currentRecipe}
@@ -103,6 +106,7 @@ const ProductBox = (props: {
   color: string;
   isRoot: boolean;
   weight: number;
+  showWp: boolean;
 }) => (
   <div
     style={{
@@ -121,7 +125,8 @@ const ProductBox = (props: {
     {Math.round(props.rate * 10000) / 10000}
     {"/min"}
     <IconWithTooltip item={props.product} />
-    {`(${Math.round(props.weight * props.rate * 100) / 100} WP)`}
+    {props.showWp &&
+      `(${Math.round(props.weight * props.rate * 100) / 100} WP)`}
   </div>
 );
 

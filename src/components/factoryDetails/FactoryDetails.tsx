@@ -1,13 +1,14 @@
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { ProductToProduce } from "./ProductToProduce";
 import { OutputRate } from "./OutputRate";
-import { Form, Select } from "antd";
+import { Form, Select, Switch } from "antd";
 import { DedicatedProducts } from "./DedicatedProducts";
 import { EfficientTreeSelection } from "./EfficientTreeSelection";
-import { SavedFactory } from "../factoryPlanner/FactoryPlanner";
 import { calculateTreeResults } from "@/calculateTreeResults";
-import { allRecipes, Recipe } from "@/App";
+import { allRecipes } from "@/App";
 import { NeededResources } from "../NeededRessources";
+import { Recipe, SavedFactory } from "@/interfaces";
+import { useState } from "react";
 
 export const FactoryDetails = (props: {
   savedFactory: SavedFactory;
@@ -45,6 +46,7 @@ export const FactoryDetails = (props: {
       .map(([product, value]) => ({ product, rate: value.rate }));
     props.setSavedFactory({ ...updated, input });
   };
+  const [showWp, setShowWp] = useState(false);
   return (
     <>
       <CustomCard>
@@ -98,6 +100,8 @@ export const FactoryDetails = (props: {
         )}
       </CustomCard>
       <NeededResources machines={machines} />
+      Show Weighted Points
+      <Switch checked={showWp} onChange={setShowWp} />
       <EfficientTreeSelection
         dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
         productToProduce={props.savedFactory.productToProduce}
@@ -108,6 +112,7 @@ export const FactoryDetails = (props: {
           changeFactory("selectedRecipes", selectedRecipes)
         }
         weights={props.weights}
+        showWp={showWp}
       />
       <div style={{ display: "flex" }}>
         {(props.savedFactory.dedicatedProducts ?? []).map((product) => (
@@ -122,6 +127,7 @@ export const FactoryDetails = (props: {
               changeFactory("selectedRecipes", selectedRecipes)
             }
             weights={props.weights}
+            showWp={showWp}
           />
         ))}
       </div>

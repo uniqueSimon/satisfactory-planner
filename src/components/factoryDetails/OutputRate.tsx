@@ -1,4 +1,4 @@
-import { Recipe } from "@/App";
+import { Recipe } from "@/interfaces";
 import { InputOnBlur } from "@/reusableComp/InputOnBlur";
 import { Form } from "antd";
 
