@@ -5,10 +5,13 @@ import { Form, Select, Switch } from "antd";
 import { DedicatedProducts } from "./DedicatedProducts";
 import { EfficientTreeSelection } from "./EfficientTreeSelection";
 import { calculateTreeResults } from "@/calculateTreeResults";
-import { allRecipes } from "@/App";
+import { allRecipes, productDisplayNameMapping } from "@/App";
 import { NeededResources } from "../NeededRessources";
 import { Recipe, SavedFactory } from "@/interfaces";
 import { useState } from "react";
+import { Copy, Trash, X } from "lucide-react";
+import { Button } from "@/reusableComp/Button";
+import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 
 export const FactoryDetails = (props: {
   savedFactory: SavedFactory;
@@ -21,6 +24,9 @@ export const FactoryDetails = (props: {
     }[]
   >;
   availableRecipes: Recipe[];
+  onClose: () => void;
+  onDelete: (id: number) => void;
+  onCopy: (newFactory: SavedFactory) => void;
 }) => {
   const { productRates, machines } = calculateTreeResults(
     props.savedFactory.productToProduce,
@@ -48,8 +54,34 @@ export const FactoryDetails = (props: {
   };
   const [showWp, setShowWp] = useState(false);
   return (
-    <>
-      <CustomCard>
+    <Form>
+      <CustomCard
+        title={
+          <div className="flex justify-between items-center">
+            <div className="flex gap-2 items-center">
+              <IconWithTooltip item={props.savedFactory.productToProduce} />
+              {productDisplayNameMapping.get(
+                props.savedFactory.productToProduce
+              )}
+            </div>
+            <div>
+              <Button onClick={() => props.onDelete(props.savedFactory.id)}>
+                <Trash />
+              </Button>
+              <Button
+                onClick={() =>
+                  props.onCopy({ ...props.savedFactory, id: Date.now() })
+                }
+              >
+                <Copy />
+              </Button>
+              <Button onClick={props.onClose}>
+                <X />
+              </Button>
+            </div>
+          </div>
+        }
+      >
         <div style={{ display: "flex" }}>
           <ProductToProduce
             productToProduce={props.savedFactory.productToProduce}
@@ -131,6 +163,6 @@ export const FactoryDetails = (props: {
           />
         ))}
       </div>
-    </>
+    </Form>
   );
 };

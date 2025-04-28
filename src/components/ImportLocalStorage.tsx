@@ -1,4 +1,5 @@
 import { Cluster } from "@/interfaces";
+import { twMerge } from "tailwind-merge";
 
 export const ImportLocalStorage = (props: {
   setSavedFactories: (savedFactories: Cluster[]) => void;
@@ -17,12 +18,32 @@ export const ImportLocalStorage = (props: {
     }
   };
   return (
-    <div>
-      <p>
-        Import into local storage (Imports saved factories and found alternate
-        recipes from a json-file)
-      </p>
-      <input type="file" accept=".json" onChange={handleFileUpload} />
+    <div className="group relative cursor-pointer">
+      <label
+        htmlFor="file-upload"
+        className={twMerge(
+          "bg-white text-black border-gray-300 border-1 px-3 py-1 rounded-lg shadow-md",
+          "hover:text-blue-500 hover:border-blue-500 hover:shadow-lg",
+          "transition-all duration-300"
+        )}
+      >
+        Upload File
+      </label>
+      <input
+        id="file-upload"
+        className="hidden"
+        type="file"
+        accept=".json"
+        onChange={handleFileUpload}
+      />
+      <div
+        className={twMerge(
+          "absolute text-center max-w-48 text-wrap left-1/2 bottom-full mb-2 w-max -translate-x-1/2 transform rounded-lg bg-gray-800 p-2 text-sm text-white transition-all",
+          "opacity-0 scale-0 group-hover:scale-100 group-hover:opacity-100"
+        )}
+      >
+        Imports saved factories and found alternate recipes from a json-file
+      </div>
     </div>
   );
 };

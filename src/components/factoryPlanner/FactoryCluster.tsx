@@ -1,5 +1,4 @@
 import { Button, Card, Input } from "antd";
-import { CustomCard } from "@/reusableComp/CustomCard";
 import { AccumulatedRates } from "./AccumulatedRates";
 import { useEffect, useRef, useState } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -29,7 +28,7 @@ const useDropable = (
 
 export const FactoryCluster = (props: {
   cluster: Cluster;
-  selectedFactoryId?: number;
+  selectedFactoryId?: number | null;
   rateBalance: RateBalance[];
   showResources: boolean;
   hoveredFactoryId?: number | null;
@@ -113,7 +112,8 @@ export const FactoryCluster = (props: {
               factory={factory}
               hoveredAccumulatedProduct={hoveredAccumulatedProduct}
               selected={props.selectedFactoryId === factory.id}
-              onSelect={() => props.onChooseFactory(factory.id)}
+              isHovered={props.hoveredFactoryId === factory.id}
+              onSelect={props.onChooseFactory}
               setHoveredFactoryId={props.setHoveredFactoryId}
               onDrop={onMoveCard}
             />

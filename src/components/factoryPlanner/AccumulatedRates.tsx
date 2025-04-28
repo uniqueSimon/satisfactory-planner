@@ -20,12 +20,22 @@ export const AccumulatedRates = (props: {
     ? [
         props.selectedFactory.productToProduce,
         ...props.selectedFactory.input.map((x) => x.product),
+        props.cluster.find((factory) =>
+          factory.input.some(
+            (x) => x.product === props.selectedFactory!.productToProduce
+          )
+        )?.productToProduce ?? [],
       ]
     : [];
   const relevantProductsHovered = props.hoveredFactory
     ? [
         props.hoveredFactory.productToProduce,
         ...props.hoveredFactory.input.map((x) => x.product),
+        props.cluster.find((factory) =>
+          factory.input.some(
+            (x) => x.product === props.hoveredFactory!.productToProduce
+          )
+        )?.productToProduce ?? [],
       ]
     : [];
   return (
@@ -79,6 +89,7 @@ export const AccumulatedRates = (props: {
                             ? "grey"
                             : "white",
                         borderRadius: 8,
+                        borderWidth: 2,
                       }}
                     >
                       <Tooltip

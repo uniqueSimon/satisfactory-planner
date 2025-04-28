@@ -2,7 +2,7 @@ import { calculateTreeResults } from "@/calculateTreeResults";
 import { allRecipes } from "@/App";
 import { SavedFactory } from "@/interfaces";
 
-export const calculateFactoryDetails = (
+export const recalculateFactoryInputs = (
   savedSettings: SavedFactory[]
 ): SavedFactory[] =>
   savedSettings.map((setting) => {

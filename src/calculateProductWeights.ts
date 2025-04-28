@@ -1,4 +1,5 @@
-import { allProducts, allRecipes, Recipe } from "./App";
+import { allProducts, allRecipes } from "./App";
+import { Recipe } from "./interfaces";
 
 export const maxRates = new Map([
   ["Coal", 42300],
