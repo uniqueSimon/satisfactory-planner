@@ -123,7 +123,7 @@ export const App = () => {
       />
       <div
         className={twMerge(
-          "bg-gray-200 overflow-auto",
+          "bg-gray-200",
           !isDragging && "transition-all duration-300 ease-in-out"
         )}
         style={{ height: selectedSavedSettings ? height : 0 }}

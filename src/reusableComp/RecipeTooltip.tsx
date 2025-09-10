@@ -18,13 +18,13 @@ export const RecipeTooltip = (props: { recipe: Recipe; rate: number }) => {
             const notLastIngredient = i < ingredients.length - 1;
             return (
               <div key={i} style={{ display: "flex", alignItems: "center" }}>
-                {`${ingredientRate}/min`}
+                {`${Math.round(ingredientRate * 100) / 100}/min`}
                 <IconWithTooltip item={ingredient.name} />
                 {notLastIngredient && <div style={{ margin: 5 }}>+</div>}
               </div>
             );
           })}
-          {`--------->     ${props.rate}/min`}
+          {`--------->     ${Math.round(props.rate * 100) / 100}/min`}
           <IconWithTooltip item={props.recipe.product.name} />
         </div>
       }

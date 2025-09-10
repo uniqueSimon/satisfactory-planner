@@ -54,115 +54,114 @@ export const FactoryDetails = (props: {
   };
   const [showWp, setShowWp] = useState(false);
   return (
-    <Form>
-      <CustomCard
-        title={
-          <div className="flex justify-between items-center">
-            <div className="flex gap-2 items-center">
-              <IconWithTooltip item={props.savedFactory.productToProduce} />
-              {productDisplayNameMapping.get(
-                props.savedFactory.productToProduce
-              )}
-            </div>
-            <div>
-              <Button onClick={() => props.onDelete(props.savedFactory.id)}>
-                <Trash />
-              </Button>
-              <Button
-                onClick={() =>
-                  props.onCopy({ ...props.savedFactory, id: Date.now() })
-                }
-              >
-                <Copy />
-              </Button>
-              <Button onClick={props.onClose}>
-                <X />
-              </Button>
-            </div>
-          </div>
-        }
-      >
-        <div style={{ display: "flex" }}>
-          <ProductToProduce
-            productToProduce={props.savedFactory.productToProduce}
-            setProductToProduce={(product) =>
-              props.setSavedFactory({
-                ...props.savedFactory,
-                productToProduce: product,
-                dedicatedProducts: [],
-                selectedRecipes: [],
-                input: [],
-              })
-            }
-          />
-          <OutputRate
-            rootRecipe={rootRecipe}
-            setWantedOutputRate={(wantedOutputRate) =>
-              changeFactory("wantedOutputRate", wantedOutputRate)
-            }
-            wantedOutputRate={props.savedFactory.wantedOutputRate}
-          />
+    <div className="flex flex-col h-full">
+      <div className="flex justify-between items-center px-2 py-1 border-2 bg-gray-200 text-xl font-semibold">
+        <div className="flex gap-2 items-center">
+          <IconWithTooltip item={props.savedFactory.productToProduce} />
+          {productDisplayNameMapping.get(props.savedFactory.productToProduce)}
         </div>
-        <Form.Item label="Selected recipes">
-          <Select
-            mode="multiple"
-            allowClear={true}
-            options={props.availableRecipes.map((x) => ({
-              key: x.recipeName,
-              value: x.recipeName,
-              label: x.displayName,
-            }))}
-            value={props.savedFactory.selectedRecipes}
-            onChange={(selectedRecipes) =>
-              changeFactory("selectedRecipes", selectedRecipes)
+        <div>
+          <Button onClick={() => props.onDelete(props.savedFactory.id)}>
+            <Trash />
+          </Button>
+          <Button
+            onClick={() =>
+              props.onCopy({ ...props.savedFactory, id: Date.now() })
             }
-          />
-        </Form.Item>
-        {props.savedFactory.productToProduce && (
-          <DedicatedProducts
-            currentProducts={props.savedFactory.selectedRecipes
-              .map((x) => allRecipes.find((y) => y.recipeName === x)!)
-              .map((x) => x.product.name)
-              .filter((x) => x !== props.savedFactory.productToProduce)}
-            dedicatedProducts={props.savedFactory.dedicatedProducts}
-            setDedicatedProducts={(dedicatedProducts) =>
-              changeFactory("dedicatedProducts", dedicatedProducts)
-            }
-          />
-        )}
-      </CustomCard>
-      <NeededResources machines={machines} />
-      Show Weighted Points
-      <Switch checked={showWp} onChange={setShowWp} />
-      <EfficientTreeSelection
-        dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
-        productToProduce={props.savedFactory.productToProduce}
-        selectedRecipes={props.savedFactory.selectedRecipes}
-        availableRecipes={props.availableRecipes}
-        wantedOutputRate={props.savedFactory.wantedOutputRate}
-        setSelectedRecipes={(selectedRecipes) =>
-          changeFactory("selectedRecipes", selectedRecipes)
-        }
-        weights={props.weights}
-        showWp={showWp}
-      />
-      <div style={{ display: "flex" }}>
-        {(props.savedFactory.dedicatedProducts ?? []).map((product) => (
+          >
+            <Copy />
+          </Button>
+          <Button onClick={props.onClose}>
+            <X />
+          </Button>
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <Form>
+          <CustomCard>
+            <div style={{ display: "flex" }}>
+              <ProductToProduce
+                productToProduce={props.savedFactory.productToProduce}
+                setProductToProduce={(product) =>
+                  props.setSavedFactory({
+                    ...props.savedFactory,
+                    productToProduce: product,
+                    dedicatedProducts: [],
+                    selectedRecipes: [],
+                    input: [],
+                  })
+                }
+              />
+              <OutputRate
+                rootRecipe={rootRecipe}
+                setWantedOutputRate={(wantedOutputRate) =>
+                  changeFactory("wantedOutputRate", wantedOutputRate)
+                }
+                wantedOutputRate={props.savedFactory.wantedOutputRate}
+              />
+            </div>
+            <Form.Item label="Selected recipes">
+              <Select
+                mode="multiple"
+                allowClear={true}
+                options={props.availableRecipes.map((x) => ({
+                  key: x.recipeName,
+                  value: x.recipeName,
+                  label: x.displayName,
+                }))}
+                value={props.savedFactory.selectedRecipes}
+                onChange={(selectedRecipes) =>
+                  changeFactory("selectedRecipes", selectedRecipes)
+                }
+              />
+            </Form.Item>
+            {props.savedFactory.productToProduce && (
+              <DedicatedProducts
+                currentProducts={props.savedFactory.selectedRecipes
+                  .map((x) => allRecipes.find((y) => y.recipeName === x)!)
+                  .map((x) => x.product.name)
+                  .filter((x) => x !== props.savedFactory.productToProduce)}
+                dedicatedProducts={props.savedFactory.dedicatedProducts}
+                setDedicatedProducts={(dedicatedProducts) =>
+                  changeFactory("dedicatedProducts", dedicatedProducts)
+                }
+              />
+            )}
+          </CustomCard>
+          <NeededResources machines={machines} />
+          Show Weighted Points
+          <Switch checked={showWp} onChange={setShowWp} />
           <EfficientTreeSelection
-            key={product}
-            dedicatedProducts={props.savedFactory.dedicatedProducts}
-            productToProduce={product}
+            dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
+            productToProduce={props.savedFactory.productToProduce}
             selectedRecipes={props.savedFactory.selectedRecipes}
             availableRecipes={props.availableRecipes}
-            wantedOutputRate={productRates.get(product)!.rate}
+            wantedOutputRate={props.savedFactory.wantedOutputRate}
             setSelectedRecipes={(selectedRecipes) =>
               changeFactory("selectedRecipes", selectedRecipes)
             }
             weights={props.weights}
             showWp={showWp}
           />
-        ))}
+          <div style={{ display: "flex" }}>
+            {(props.savedFactory.dedicatedProducts ?? []).map((product) => (
+              <EfficientTreeSelection
+                key={product}
+                dedicatedProducts={props.savedFactory.dedicatedProducts}
+                productToProduce={product}
+                selectedRecipes={props.savedFactory.selectedRecipes}
+                availableRecipes={props.availableRecipes}
+                wantedOutputRate={productRates.get(product)!.rate}
+                setSelectedRecipes={(selectedRecipes) =>
+                  changeFactory("selectedRecipes", selectedRecipes)
+                }
+                weights={props.weights}
+                showWp={showWp}
+              />
+            ))}
+          </div>
+        </Form>
       </div>
-    </Form>
+    </div>
   );
 };

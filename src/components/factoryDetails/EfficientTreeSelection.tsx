@@ -1,8 +1,8 @@
 import { Select } from "antd";
 import { RecipeTooltip } from "../../reusableComp/RecipeTooltip";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
-import { DownCircleOutlined } from "@ant-design/icons";
 import { Recipe } from "@/interfaces";
+import { CircleEllipsis } from "lucide-react";
 
 export const EfficientTreeSelection = (props: {
   productToProduce: string;
@@ -70,6 +70,7 @@ export const EfficientTreeSelection = (props: {
           selectedRecipes={props.selectedRecipes}
           setSelectedRecipes={props.setSelectedRecipes}
           weights={props.weights.get(propsRec.product)!}
+          showWp={props.showWp}
         />
         {currentRecipe && (
           <div style={{ display: "flex" }}>
@@ -137,6 +138,7 @@ const RecipeSelection = (props: {
   selectedRecipes: string[];
   setSelectedRecipes: (recipes: string[]) => void;
   weights: { recipeName: string; weight: number }[];
+  showWp: boolean;
 }) => {
   if (props.recipes.length === 1) {
     const recipe = props.recipes[0];
@@ -164,7 +166,7 @@ const RecipeSelection = (props: {
             <IconWithTooltip item={recipe.producedIn} />
           </>
         ) : (
-          <DownCircleOutlined
+          <CircleEllipsis
             onClick={() => {
               if (!props.currentRecipe) {
                 props.setSelectedRecipes([
@@ -200,15 +202,16 @@ const RecipeSelection = (props: {
                 <span style={{ margin: "0 5px" }}>x</span>
                 <RecipeTooltip recipe={x} rate={props.rate} />
                 <IconWithTooltip item={x.producedIn} />
-                {`(${
-                  Math.round(
-                    props.weights.find(
-                      (recipe) => recipe.recipeName === x.recipeName
-                    )!.weight *
-                      props.rate *
-                      100
-                  ) / 100
-                } WP)`}
+                {props.showWp &&
+                  `(${
+                    Math.round(
+                      props.weights.find(
+                        (recipe) => recipe.recipeName === x.recipeName
+                      )!.weight *
+                        props.rate *
+                        100
+                    ) / 100
+                  } WP)`}
               </div>
             ),
           };
