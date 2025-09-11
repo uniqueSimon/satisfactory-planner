@@ -1,4 +1,4 @@
-import { Recipe } from "./App";
+import { Recipe } from "./interfaces";
 
 export const calculateTreeResults = (
   productToProduce: string,
