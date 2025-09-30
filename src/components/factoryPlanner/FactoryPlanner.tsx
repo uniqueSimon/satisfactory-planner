@@ -21,7 +21,8 @@ export const FactoryPlanner = (props: {
     .flat();
   const rateBalance = accumulateRates(props.savedFactories);
   return (
-    <CustomCard title="Factory planner">
+    <CustomCard>
+      {/* 
       <Button
         onClick={() =>
           props.setSavedFactories(
@@ -34,6 +35,7 @@ export const FactoryPlanner = (props: {
       >
         Recalculate factory inputs
       </Button>
+ */}
       <Form.Item label="Show resources" style={{ margin: 0 }}>
         <Switch checked={showResources} onChange={setShowResources} />
       </Form.Item>

@@ -128,8 +128,8 @@ export const FactoryCluster = (props: {
                     ...props.cluster.factories,
                     {
                       id: now,
-                      productToProduce: "",
-                      wantedOutputRate: 0,
+                      productToProduce: "IronPlate",
+                      wantedOutputRate: 60,
                       selectedRecipes: [],
                       dedicatedProducts: [],
                       input: [],

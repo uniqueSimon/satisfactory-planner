@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Form, Select, Typography } from "antd";
 import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
 import { useLocalStorage } from "./reusableComp/useLocalStorage";
@@ -8,11 +9,10 @@ import { AlternateRecipes } from "./components/AlternateRecipes";
 import allProductsJson from "./gameData/allProducts.json";
 import allRecipesJson from "./gameData/allRecipes.json";
 import displayNamesJson from "./gameData/displayNames.json";
-import { ExportLocalStorage } from "./components/ExportLocalStorage";
-import { ImportLocalStorage } from "./components/ImportLocalStorage";
 import { Cluster, SavedFactory } from "./interfaces";
 import { twMerge } from "tailwind-merge";
 import { useResizeDrawer } from "./components/factoryDetails/useResizeDrawer";
+import { LocalStorage } from "./components/localStorage/LocalStorage";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -21,18 +21,98 @@ export const productDisplayNameMapping = new Map(
 );
 
 export const App = () => {
-  const [savedFactories, setSavedFactories] = useLocalStorage<Cluster[]>(
-    "saved-factories",
-    []
-  );
   const [foundAltRecipes, setFoundAltRecipes] = useLocalStorage<string[]>(
     "found-alt-recipes",
     []
   );
+  const [savedFactories, setSavedFactories] = useLocalStorage<Cluster[]>(
+    "saved-factories",
+    []
+  );
+  return (
+    <Router>
+      <div className="p-4">
+        <nav className="mb-4 space-x-4">
+          <Link
+            to="/satisfactory-planner/"
+            className="text-blue-600 hover:underline"
+          >
+            Home
+          </Link>
+          <Link
+            to="/satisfactory-planner/alt-recipes"
+            className="text-blue-600 hover:underline"
+          >
+            Alternate recipes
+          </Link>
+          <Link
+            to="/satisfactory-planner/local-storage"
+            className="text-blue-600 hover:underline"
+          >
+            Local storage
+          </Link>
+        </nav>
+      </div>
+
+      <Routes>
+        <Route
+          path="/satisfactory-planner/"
+          element={
+            <Home
+              foundAltRecipes={foundAltRecipes}
+              setFoundAltRecipes={setFoundAltRecipes}
+              savedFactories={savedFactories}
+              setSavedFactories={setSavedFactories}
+            />
+          }
+        />
+        <Route
+          path="/satisfactory-planner/alt-recipes"
+          element={
+            <AltRecipes
+              foundAltRecipes={foundAltRecipes}
+              setFoundAltRecipes={setFoundAltRecipes}
+            />
+          }
+        />
+        <Route
+          path="/satisfactory-planner/local-storage"
+          element={
+            <LocalStorage
+              foundAltRecipes={foundAltRecipes}
+              savedFactories={savedFactories}
+              setFoundAltRecipes={setFoundAltRecipes}
+              setSavedFactories={setSavedFactories}
+            />
+          }
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+const AltRecipes = (props: {
+  foundAltRecipes: string[];
+  setFoundAltRecipes: (recipes: string[]) => void;
+}) => (
+  <AlternateRecipes
+    foundAltRecipes={props.foundAltRecipes}
+    setFoundAltRecipes={props.setFoundAltRecipes}
+  />
+);
+
+const Home = (props: {
+  foundAltRecipes: string[];
+  setFoundAltRecipes: (recipes: string[]) => void;
+  savedFactories: Cluster[];
+  setSavedFactories: (newValue: Cluster[]) => void;
+}) => {
   const [clickedFactoryId, setClickedFactoryId] = useState<number | null>(null);
   const [excludedResources, setExcludedResources] = useState([]);
 
-  const combinedSavedFactories = savedFactories.map((x) => x.factories).flat();
+  const combinedSavedFactories = props.savedFactories
+    .map((x) => x.factories)
+    .flat();
   const selectedSavedSettings = combinedSavedFactories.find(
     (x) => x.id === clickedFactoryId
   );
@@ -41,29 +121,29 @@ export const App = () => {
   const weights = calculateProductWeights(excludedResources);
 
   const availableRecipes = allRecipes.filter(
-    (x) => !x.isAlternate || foundAltRecipes.includes(x.recipeName)
+    (x) => !x.isAlternate || props.foundAltRecipes.includes(x.recipeName)
   );
 
   const { height, isDragging, handleMouseDown } = useResizeDrawer();
 
   const onDelete = (id: number) => {
     setClickedFactoryId(null);
-    setSavedFactories(
-      savedFactories.map((cluster) => ({
+    props.setSavedFactories(
+      props.savedFactories.map((cluster) => ({
         ...cluster,
         factories: cluster.factories.filter((x) => x.id !== id),
       }))
     );
   };
   const onCopy = (factory: SavedFactory) => {
-    setSavedFactories([
-      ...savedFactories,
+    props.setSavedFactories([
+      ...props.savedFactories,
       { title: "Copied", factories: [factory] },
     ]);
   };
   const onChangeFactory = (changedFactory: SavedFactory) =>
-    setSavedFactories(
-      savedFactories.map((cluster) => ({
+    props.setSavedFactories(
+      props.savedFactories.map((cluster) => ({
         ...cluster,
         factories: cluster.factories.map((factory) =>
           factory.id === clickedFactoryId ? changedFactory : factory
@@ -78,24 +158,14 @@ export const App = () => {
           isDragging ? "pointer-events-none" : "pointer-events-auto"
         )}
       >
-        <Typography.Title>Satisfactory Production Optimizer</Typography.Title>
-        <div className="flex">
-          <ExportLocalStorage
-            foundAltRecipes={foundAltRecipes}
-            savedFactories={savedFactories}
-          />
-          <ImportLocalStorage
-            setFoundAltRecipes={setFoundAltRecipes}
-            setSavedFactories={setSavedFactories}
-          />
-        </div>
+        <Typography.Title>Satisfactory Planner</Typography.Title>
         <FactoryPlanner
           clickedFactoryId={clickedFactoryId}
-          savedFactories={savedFactories}
+          savedFactories={props.savedFactories}
           setClickedFactoryId={setClickedFactoryId}
-          setSavedFactories={setSavedFactories}
+          setSavedFactories={props.setSavedFactories}
         />
-        <Form>
+        {/* <Form>
           <Form.Item label="Resources to exclude from weighting points">
             <Select
               style={{ display: "block" }}
@@ -110,12 +180,7 @@ export const App = () => {
               onChange={setExcludedResources}
             />
           </Form.Item>
-          <AlternateRecipes
-            weights={weights}
-            foundAltRecipes={foundAltRecipes}
-            setFoundAltRecipes={setFoundAltRecipes}
-          />
-        </Form>
+        </Form> */}
       </div>
       <div
         onMouseDown={handleMouseDown}

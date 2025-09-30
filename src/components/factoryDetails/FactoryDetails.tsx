@@ -128,9 +128,11 @@ export const FactoryDetails = (props: {
               />
             )}
           </CustomCard>
+          {/* 
           <NeededResources machines={machines} />
           Show Weighted Points
           <Switch checked={showWp} onChange={setShowWp} />
+           */}
           <EfficientTreeSelection
             dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
             productToProduce={props.savedFactory.productToProduce}
