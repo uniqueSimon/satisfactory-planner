@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Form, Select, Typography } from "antd";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Typography } from "antd";
 import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
 import { useLocalStorage } from "./reusableComp/useLocalStorage";
 import { useState } from "react";
@@ -13,6 +13,7 @@ import { Cluster, SavedFactory } from "./interfaces";
 import { twMerge } from "tailwind-merge";
 import { useResizeDrawer } from "./components/factoryDetails/useResizeDrawer";
 import { LocalStorage } from "./components/localStorage/LocalStorage";
+import { NaviagationBar } from "./NavigationBar";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -30,76 +31,46 @@ export const App = () => {
     []
   );
   return (
-    <Router>
-      <div className="p-4">
-        <nav className="mb-4 space-x-4">
-          <Link
-            to="/satisfactory-planner/"
-            className="text-blue-600 hover:underline"
-          >
-            Home
-          </Link>
-          <Link
-            to="/satisfactory-planner/alt-recipes"
-            className="text-blue-600 hover:underline"
-          >
-            Alternate recipes
-          </Link>
-          <Link
-            to="/satisfactory-planner/local-storage"
-            className="text-blue-600 hover:underline"
-          >
-            Local storage
-          </Link>
-        </nav>
-      </div>
-
-      <Routes>
-        <Route
-          path="/satisfactory-planner/"
-          element={
-            <Home
-              foundAltRecipes={foundAltRecipes}
-              setFoundAltRecipes={setFoundAltRecipes}
-              savedFactories={savedFactories}
-              setSavedFactories={setSavedFactories}
-            />
-          }
-        />
-        <Route
-          path="/satisfactory-planner/alt-recipes"
-          element={
-            <AltRecipes
-              foundAltRecipes={foundAltRecipes}
-              setFoundAltRecipes={setFoundAltRecipes}
-            />
-          }
-        />
-        <Route
-          path="/satisfactory-planner/local-storage"
-          element={
-            <LocalStorage
-              foundAltRecipes={foundAltRecipes}
-              savedFactories={savedFactories}
-              setFoundAltRecipes={setFoundAltRecipes}
-              setSavedFactories={setSavedFactories}
-            />
-          }
-        />
-      </Routes>
-    </Router>
+    <div className="flex flex-col h-screen">
+      <Router>
+        <NaviagationBar />
+        <Routes>
+          <Route
+            path="/satisfactory-planner/"
+            element={
+              <Home
+                foundAltRecipes={foundAltRecipes}
+                setFoundAltRecipes={setFoundAltRecipes}
+                savedFactories={savedFactories}
+                setSavedFactories={setSavedFactories}
+              />
+            }
+          />
+          <Route
+            path="/satisfactory-planner/alt-recipes"
+            element={
+              <AlternateRecipes
+                foundAltRecipes={foundAltRecipes}
+                setFoundAltRecipes={setFoundAltRecipes}
+              />
+            }
+          />
+          <Route
+            path="/satisfactory-planner/local-storage"
+            element={
+              <LocalStorage
+                foundAltRecipes={foundAltRecipes}
+                savedFactories={savedFactories}
+                setFoundAltRecipes={setFoundAltRecipes}
+                setSavedFactories={setSavedFactories}
+              />
+            }
+          />
+        </Routes>
+      </Router>
+    </div>
   );
 };
-
-const AltRecipes = (props: {
-  foundAltRecipes: string[];
-  setFoundAltRecipes: (recipes: string[]) => void;
-}) => (
-  <AlternateRecipes
-    foundAltRecipes={props.foundAltRecipes}
-    setFoundAltRecipes={props.setFoundAltRecipes}
-  />
-);
 
 const Home = (props: {
   foundAltRecipes: string[];
@@ -151,7 +122,7 @@ const Home = (props: {
       }))
     );
   return (
-    <div className="flex flex-col h-screen">
+    <>
       <div
         className={twMerge(
           "p-4 flex-1 overflow-auto",
@@ -205,6 +176,6 @@ const Home = (props: {
           />
         )}
       </div>
-    </div>
+    </>
   );
 };
