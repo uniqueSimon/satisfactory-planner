@@ -1,4 +1,4 @@
-import { Recipe } from "./interfaces";
+import { FactorySetup, Recipe } from "./interfaces";
 
 export const calculateTreeResults = (
   productToProduce: string,
@@ -11,6 +11,7 @@ export const calculateTreeResults = (
     string,
     { rate: number; type?: "RESOURCE" | "MULTIPLE" }
   >();
+  const factorySetup: FactorySetup[] = [];
   const recursion = (product: string, rate: number) => {
     const recipe = availableRecipes.find(
       (x) =>
@@ -36,6 +37,12 @@ export const calculateTreeResults = (
         existingMachine ? existingMachine + numberOfMachines : numberOfMachines
       );
 
+      factorySetup.push({
+        count: numberOfMachines,
+        producedIn: recipe.producedIn.replace("Mk1", ""),
+        recipeName: recipe.recipeName,
+      });
+
       for (const ingredient of recipe.ingredients) {
         const ingredientRate =
           (ingredient.amount / recipe.product.amount) * rate;
@@ -45,5 +52,5 @@ export const calculateTreeResults = (
   };
   recursion(productToProduce, wantedOutputRate);
 
-  return { machines, productRates };
+  return { machines, productRates, factorySetup };
 };

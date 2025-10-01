@@ -10,6 +10,7 @@ import { Recipe, SavedFactory } from "@/interfaces";
 import { Copy, Trash, X } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
+import { FactoryConfigExport } from "./FactoryConfigExport";
 
 export const FactoryDetails = (props: {
   savedFactory: SavedFactory;
@@ -19,7 +20,7 @@ export const FactoryDetails = (props: {
   onDelete: (id: number) => void;
   onCopy: (newFactory: SavedFactory) => void;
 }) => {
-  const { productRates } = calculateTreeResults(
+  const { productRates, factorySetup } = calculateTreeResults(
     props.savedFactory.productToProduce,
     props.savedFactory.wantedOutputRate,
     props.savedFactory.selectedRecipes,
@@ -118,6 +119,7 @@ export const FactoryDetails = (props: {
               />
             )}
           </CustomCard>
+          <FactoryConfigExport factorySetup={factorySetup} />
           <EfficientTreeSelection
             dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
             productToProduce={props.savedFactory.productToProduce}

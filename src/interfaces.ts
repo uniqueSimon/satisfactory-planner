@@ -22,3 +22,9 @@ export interface Recipe {
   producedIn: string;
   tier: number;
 }
+
+export interface FactorySetup {
+  count: number;
+  producedIn: string;
+  recipeName: string;
+}
