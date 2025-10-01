@@ -1,50 +1,29 @@
-# React + TypeScript + Vite
+# 🏭 Satisfactory Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **static browser tool** for the game [Satisfactory](https://www.satisfactorygame.com/) that helps you **plan your factory layouts, recipes, and resource usage**.  
+It automatically calculates item rates between production machines, so you can focus on building instead of crunching numbers.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- 📊 **Production Planning** – Define what you want to produce and with which recipes.
+- ⚙️ **Automatic Calculations** – Get precise item throughput and flow rates.
+- 💾 **Save Configurations** – Store and revisit your factory setups anytime.
+- 🧩 **Mod Support** – Works seamlessly with my custom mod [Factory Spawner](https://github.com/uniqueSimon/FactorySpawner) ([Ficsit page](https://ficsit.app/mod/FactorySpawner)).
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## 🚀 Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+This is a **static web app**, available directly on GitHub Pages:  
+👉 [Open Satisfactory Planner](https://uniquesimon.github.io/satisfactory-planner/)
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+No installation required—just open it in your browser.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+---
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## 💬 Community
+
+Got questions, feedback, or suggestions? Join the conversation:  
+[![Discord](https://img.shields.io/discord/1234567890?logo=discord&style=flat&color=5865F2&label=Discord)](https://discord.gg/Yzgw9yQK)
