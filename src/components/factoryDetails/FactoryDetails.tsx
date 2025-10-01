@@ -1,14 +1,12 @@
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { ProductToProduce } from "./ProductToProduce";
 import { OutputRate } from "./OutputRate";
-import { Form, Select, Switch } from "antd";
+import { Form, Select } from "antd";
 import { DedicatedProducts } from "./DedicatedProducts";
 import { EfficientTreeSelection } from "./EfficientTreeSelection";
 import { calculateTreeResults } from "@/calculateTreeResults";
 import { allRecipes, productDisplayNameMapping } from "@/App";
-import { NeededResources } from "../NeededRessources";
 import { Recipe, SavedFactory } from "@/interfaces";
-import { useState } from "react";
 import { Copy, Trash, X } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
@@ -16,19 +14,12 @@ import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 export const FactoryDetails = (props: {
   savedFactory: SavedFactory;
   setSavedFactory: (savedFactory: SavedFactory) => void;
-  weights: Map<
-    string,
-    {
-      recipeName: string;
-      weight: number;
-    }[]
-  >;
   availableRecipes: Recipe[];
   onClose: () => void;
   onDelete: (id: number) => void;
   onCopy: (newFactory: SavedFactory) => void;
 }) => {
-  const { productRates, machines } = calculateTreeResults(
+  const { productRates } = calculateTreeResults(
     props.savedFactory.productToProduce,
     props.savedFactory.wantedOutputRate,
     props.savedFactory.selectedRecipes,
@@ -52,7 +43,6 @@ export const FactoryDetails = (props: {
       .map(([product, value]) => ({ product, rate: value.rate }));
     props.setSavedFactory({ ...updated, input });
   };
-  const [showWp, setShowWp] = useState(false);
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center px-2 py-1 border-2 bg-gray-200 text-xl font-semibold">
@@ -128,11 +118,6 @@ export const FactoryDetails = (props: {
               />
             )}
           </CustomCard>
-          {/* 
-          <NeededResources machines={machines} />
-          Show Weighted Points
-          <Switch checked={showWp} onChange={setShowWp} />
-           */}
           <EfficientTreeSelection
             dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
             productToProduce={props.savedFactory.productToProduce}
@@ -142,8 +127,6 @@ export const FactoryDetails = (props: {
             setSelectedRecipes={(selectedRecipes) =>
               changeFactory("selectedRecipes", selectedRecipes)
             }
-            weights={props.weights}
-            showWp={showWp}
           />
           <div style={{ display: "flex" }}>
             {(props.savedFactory.dedicatedProducts ?? []).map((product) => (
@@ -157,8 +140,6 @@ export const FactoryDetails = (props: {
                 setSelectedRecipes={(selectedRecipes) =>
                   changeFactory("selectedRecipes", selectedRecipes)
                 }
-                weights={props.weights}
-                showWp={showWp}
               />
             ))}
           </div>

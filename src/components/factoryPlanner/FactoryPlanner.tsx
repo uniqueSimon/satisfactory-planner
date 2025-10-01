@@ -2,7 +2,6 @@ import { Form, Switch } from "antd";
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { useState } from "react";
 import { FactoryCluster } from "./FactoryCluster";
-import { recalculateFactoryInputs } from "./recalculateFactoryInputs";
 import { accumulateRates } from "./accumulateRates";
 import { SquarePlus } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
@@ -22,20 +21,6 @@ export const FactoryPlanner = (props: {
   const rateBalance = accumulateRates(props.savedFactories);
   return (
     <CustomCard>
-      {/* 
-      <Button
-        onClick={() =>
-          props.setSavedFactories(
-            props.savedFactories.map((cluster) => ({
-              ...cluster,
-              factories: recalculateFactoryInputs(cluster.factories),
-            }))
-          )
-        }
-      >
-        Recalculate factory inputs
-      </Button>
- */}
       <Form.Item label="Show resources" style={{ margin: 0 }}>
         <Switch checked={showResources} onChange={setShowResources} />
       </Form.Item>

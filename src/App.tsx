@@ -4,7 +4,6 @@ import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
 import { useLocalStorage } from "./reusableComp/useLocalStorage";
 import { useState } from "react";
 import { FactoryDetails } from "./components/factoryDetails/FactoryDetails";
-import { calculateProductWeights, maxRates } from "./calculateProductWeights";
 import { AlternateRecipes } from "./components/AlternateRecipes";
 import allProductsJson from "./gameData/allProducts.json";
 import allRecipesJson from "./gameData/allRecipes.json";
@@ -79,7 +78,6 @@ const Home = (props: {
   setSavedFactories: (newValue: Cluster[]) => void;
 }) => {
   const [clickedFactoryId, setClickedFactoryId] = useState<number | null>(null);
-  const [excludedResources, setExcludedResources] = useState([]);
 
   const combinedSavedFactories = props.savedFactories
     .map((x) => x.factories)
@@ -87,9 +85,6 @@ const Home = (props: {
   const selectedSavedSettings = combinedSavedFactories.find(
     (x) => x.id === clickedFactoryId
   );
-  const allResources = [...maxRates.keys()];
-
-  const weights = calculateProductWeights(excludedResources);
 
   const availableRecipes = allRecipes.filter(
     (x) => !x.isAlternate || props.foundAltRecipes.includes(x.recipeName)
@@ -136,22 +131,6 @@ const Home = (props: {
           setClickedFactoryId={setClickedFactoryId}
           setSavedFactories={props.setSavedFactories}
         />
-        {/* <Form>
-          <Form.Item label="Resources to exclude from weighting points">
-            <Select
-              style={{ display: "block" }}
-              mode="multiple"
-              allowClear={true}
-              options={allResources.map((x) => ({
-                key: x,
-                value: x,
-                label: x,
-              }))}
-              value={excludedResources}
-              onChange={setExcludedResources}
-            />
-          </Form.Item>
-        </Form> */}
       </div>
       <div
         onMouseDown={handleMouseDown}
@@ -171,7 +150,6 @@ const Home = (props: {
             onCopy={onCopy}
             availableRecipes={availableRecipes}
             savedFactory={selectedSavedSettings}
-            weights={weights}
             setSavedFactory={onChangeFactory}
           />
         )}
