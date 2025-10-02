@@ -9,8 +9,15 @@ export const FactoryConfigExport = (props: {
   const [copied, setCopied] = useState(false);
   useEffect(() => setCopied(false), [props.factorySetup]);
   const factoryRows = props.factorySetup.map(
-    ({ count, producedIn, recipeName }) =>
-      `${count} ${producedIn} ${recipeName}`
+    ({ count, producedIn, recipeName }) => {
+      const rounded_up = Math.ceil(count);
+      const base = `${rounded_up} ${producedIn} ${recipeName}`;
+      if (rounded_up === count) {
+        return base;
+      }
+      const clock_speed = count / rounded_up;
+      return `${base} ${clock_speed}`;
+    }
   );
 
   const exportString = `/FactorySpawner ${[...factoryRows]
