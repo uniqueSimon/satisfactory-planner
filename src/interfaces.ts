@@ -23,8 +23,9 @@ export interface Recipe {
   tier: number;
 }
 
-export interface FactorySetup {
-  count: number;
-  producedIn: string;
-  recipeName: string;
+export interface TreeResults {
+  rate: number;
+  machineCount: number;
+  recipe?: Recipe;
+  type?: "RESOURCE" | "MULTIPLE";
 }

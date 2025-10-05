@@ -20,7 +20,7 @@ export const FactoryDetails = (props: {
   onDelete: (id: number) => void;
   onCopy: (newFactory: SavedFactory) => void;
 }) => {
-  const { productRates, factorySetup } = calculateTreeResults(
+  const productRates = calculateTreeResults(
     props.savedFactory.productToProduce,
     props.savedFactory.wantedOutputRate,
     props.savedFactory.selectedRecipes,
@@ -33,7 +33,7 @@ export const FactoryDetails = (props: {
   );
   const changeFactory = (property: string, value: any) => {
     const updated = { ...props.savedFactory, [property]: value };
-    const { productRates } = calculateTreeResults(
+    const productRates = calculateTreeResults(
       updated.productToProduce,
       updated.wantedOutputRate,
       updated.selectedRecipes,
@@ -119,7 +119,7 @@ export const FactoryDetails = (props: {
               />
             )}
           </CustomCard>
-          <FactoryConfigExport factorySetup={factorySetup} />
+          <FactoryConfigExport productRates={productRates} />
           <EfficientTreeSelection
             dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
             productToProduce={props.savedFactory.productToProduce}

@@ -1,24 +1,32 @@
 import { useEffect, useState } from "react";
-import { FactorySetup } from "@/interfaces";
+import { TreeResults } from "@/interfaces";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
 
 export const FactoryConfigExport = (props: {
-  factorySetup: FactorySetup[];
+  productRates: Map<string, TreeResults>;
 }) => {
   const [copied, setCopied] = useState(false);
-  useEffect(() => setCopied(false), [props.factorySetup]);
-  const factoryRows = props.factorySetup.map(
-    ({ count, producedIn, recipeName }) => {
-      const rounded_up = Math.ceil(count);
+  useEffect(() => setCopied(false), [props.productRates]);
+
+  const factoryRows: string[] = [];
+  props.productRates.forEach((value, _key) => {
+    const { machineCount, recipe, type } = value;
+    if (type !== "RESOURCE") {
+      const recipeName = recipe?.recipeName;
+      const producedIn = recipe!.producedIn.replace("Mk1", "");
+
+      const rounded_up = Math.ceil(machineCount);
       const base = `${rounded_up} ${producedIn} ${recipeName}`;
-      if (rounded_up === count) {
-        return base;
+      if (rounded_up === machineCount) {
+        factoryRows.push(base);
+      } else {
+        const clock_speed =
+          Math.round(((machineCount * 100) / rounded_up) * 10000) / 10000;
+        factoryRows.push(`${base} ${clock_speed}`);
       }
-      const clock_speed = count / rounded_up;
-      return `${base} ${clock_speed}`;
     }
-  );
+  });
 
   const exportString = `/FactorySpawner ${[...factoryRows]
     .reverse()
