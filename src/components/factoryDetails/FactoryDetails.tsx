@@ -119,7 +119,13 @@ export const FactoryDetails = (props: {
               />
             )}
           </CustomCard>
-          <FactoryConfigExport productRates={productRates} />
+          <FactoryConfigExport
+            availableRecipes={props.availableRecipes}
+            dedicatedProducts={props.savedFactory.dedicatedProducts}
+            productToProduce={props.savedFactory.productToProduce}
+            selectedRecipes={props.savedFactory.selectedRecipes}
+            wantedOutputRate={props.savedFactory.wantedOutputRate}
+          />
           <EfficientTreeSelection
             dedicatedProducts={props.savedFactory.dedicatedProducts ?? []}
             productToProduce={props.savedFactory.productToProduce}

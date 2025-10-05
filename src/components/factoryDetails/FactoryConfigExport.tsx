@@ -1,20 +1,36 @@
 import { useEffect, useState } from "react";
-import { TreeResults } from "@/interfaces";
+import { Recipe, TreeResults } from "@/interfaces";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
 
 export const FactoryConfigExport = (props: {
-  productRates: Map<string, TreeResults>;
+  productToProduce: string;
+  wantedOutputRate: number;
+  selectedRecipes: string[];
+  availableRecipes: Recipe[];
+  dedicatedProducts: string[];
 }) => {
   const [copied, setCopied] = useState(false);
-  useEffect(() => setCopied(false), [props.productRates]);
+  useEffect(() => setCopied(false), [props]);
 
   const factoryRows: string[] = [];
-  props.productRates.forEach((value, _key) => {
-    const { machineCount, recipe, type } = value;
-    if (type !== "RESOURCE") {
-      const recipeName = recipe?.recipeName;
-      const producedIn = recipe!.producedIn.replace("Mk1", "");
+
+  const dedicatedProductRates = new Map<string, number>();
+
+  const recursion = (product: string, rate: number, isDedicated: boolean) => {
+    const recipe = props.availableRecipes.find(
+      (x) =>
+        x.product.name === product &&
+        props.selectedRecipes.includes(x.recipeName)
+    );
+
+    const machineCount = recipe
+      ? rate / ((recipe.product.amount / recipe.time) * 60)
+      : 0;
+
+    if (recipe) {
+      const recipeName = recipe.recipeName;
+      const producedIn = recipe.producedIn.replace("Mk1", "");
 
       const rounded_up = Math.ceil(machineCount);
       const base = `${rounded_up} ${producedIn} ${recipeName}`;
@@ -25,8 +41,27 @@ export const FactoryConfigExport = (props: {
           Math.round(((machineCount * 100) / rounded_up) * 10000) / 10000;
         factoryRows.push(`${base} ${clock_speed}`);
       }
+
+      for (const ingredient of recipe.ingredients) {
+        const ingredientRate =
+          (ingredient.amount / recipe.product.amount) * rate;
+        if (props.dedicatedProducts.includes(ingredient.name) && !isDedicated) {
+          const existing = dedicatedProductRates.get(ingredient.name);
+          dedicatedProductRates.set(
+            ingredient.name,
+            (existing ?? 0) + ingredientRate
+          );
+        } else {
+          recursion(ingredient.name, ingredientRate, isDedicated);
+        }
+      }
     }
-  });
+  };
+  recursion(props.productToProduce, props.wantedOutputRate, false);
+
+  for (const product of props.dedicatedProducts) {
+    recursion(product, dedicatedProductRates.get(product)!, true);
+  }
 
   const exportString = `/FactorySpawner ${[...factoryRows]
     .reverse()
