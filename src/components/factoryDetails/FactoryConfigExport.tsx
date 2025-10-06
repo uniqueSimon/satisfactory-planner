@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Recipe, TreeResults } from "@/interfaces";
+import { Recipe } from "@/interfaces";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
 
@@ -29,28 +29,33 @@ export const FactoryConfigExport = (props: {
       : 0;
 
     if (recipe) {
-      const recipeName = recipe.recipeName;
-      const producedIn = recipe.producedIn.replace("Mk1", "");
+      if (isDedicated) {
+        const recipeName = recipe.recipeName;
+        const producedIn = recipe.producedIn.replace("Mk1", "");
 
-      const rounded_up = Math.ceil(machineCount);
-      const base = `${rounded_up} ${producedIn} ${recipeName}`;
-      if (rounded_up === machineCount) {
-        factoryRows.push(base);
-      } else {
-        const clock_speed =
-          Math.round(((machineCount * 100) / rounded_up) * 10000) / 10000;
-        factoryRows.push(`${base} ${clock_speed}`);
+        const rounded_up = Math.ceil(machineCount);
+        const base = `${rounded_up} ${producedIn} ${recipeName}`;
+        if (rounded_up === machineCount) {
+          factoryRows.push(base);
+        } else {
+          const clock_speed =
+            Math.round(((machineCount * 100) / rounded_up) * 10000) / 10000;
+          factoryRows.push(`${base} ${clock_speed}`);
+        }
       }
 
       for (const ingredient of recipe.ingredients) {
         const ingredientRate =
           (ingredient.amount / recipe.product.amount) * rate;
-        if (props.dedicatedProducts.includes(ingredient.name) && !isDedicated) {
-          const existing = dedicatedProductRates.get(ingredient.name);
-          dedicatedProductRates.set(
-            ingredient.name,
-            (existing ?? 0) + ingredientRate
-          );
+        if (props.dedicatedProducts.includes(ingredient.name)) {
+          if (!isDedicated) {
+            const existing = dedicatedProductRates.get(ingredient.name);
+            dedicatedProductRates.set(
+              ingredient.name,
+              (existing ?? 0) + ingredientRate
+            );
+            recursion(ingredient.name, ingredientRate, isDedicated);
+          }
         } else {
           recursion(ingredient.name, ingredientRate, isDedicated);
         }
@@ -59,6 +64,7 @@ export const FactoryConfigExport = (props: {
   };
   recursion(props.productToProduce, props.wantedOutputRate, false);
 
+  recursion(props.productToProduce, props.wantedOutputRate, true);
   for (const product of props.dedicatedProducts) {
     recursion(product, dedicatedProductRates.get(product)!, true);
   }
