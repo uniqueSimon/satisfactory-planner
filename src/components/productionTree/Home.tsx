@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
-import Tree from "react-d3-tree";
+import { useEffect, useRef, useState } from "react";
+import Tree, { Point, TreeNodeDatum } from "react-d3-tree";
 import { ProductNodeModel, ProductNodeNested, Recipe } from "../../interfaces";
 import { buildTree, getDescendantIds, onRecipeSelect } from "./treeUtils";
 import { ProductionSetupForm } from "./ProductionSetupForm";
@@ -49,6 +49,27 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
         )
     );
   };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const treeRef = useRef<any>(null);
+  const [dimensions, setDimensions] = useState({ width: 400, height: 300 });
+
+  useEffect(() => {
+    // wait for tree to render
+    const svg = containerRef.current?.querySelector("svg");
+    if (!svg) return;
+
+    const g = svg.querySelector("g");
+    if (!g) return;
+
+    const box = g.getBBox();
+    const padding = 100;
+
+    const width = box.width; // + padding * 2;
+    const height = box.height; // + padding * 2;
+
+    setDimensions({ width, height });
+  }, [productNodes]);
+
   return (
     <div className="w-full bg-gray-50">
       <ProductionSetupForm
@@ -59,20 +80,32 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
         setRate={setOutputRate}
       />
       {tree && (
-        <Tree
-          data={tree}
-          translate={{ x: 400, y: 300 }}
-          orientation="vertical"
-          renderCustomNodeElement={({ nodeDatum }) => (
-            <ProductNode
-              nodeDatum={nodeDatum as unknown as ProductNodeNested}
-              availableRecipes={props.availableRecipes}
-              handleSelectRecipe={handleSelectRecipe}
-              onClearRecipe={onClearRecipe}
-            />
-          )}
-          collapsible={false}
-        />
+        <div
+          ref={containerRef}
+          className="inline-block border rounded-lg bg-gray-50"
+          style={{
+            width: dimensions.width,
+            height: dimensions.height,
+          }}
+        >
+          <Tree
+            ref={treeRef}
+            data={tree}
+            zoomable={false}
+            draggable={false}
+            translate={{ x: 80, y: 50 }}
+            orientation="vertical"
+            renderCustomNodeElement={({ nodeDatum }) => (
+              <ProductNode
+                nodeDatum={nodeDatum as unknown as ProductNodeNested}
+                availableRecipes={props.availableRecipes}
+                handleSelectRecipe={handleSelectRecipe}
+                onClearRecipe={onClearRecipe}
+              />
+            )}
+            collapsible={false}
+          />
+        </div>
       )}
     </div>
   );
