@@ -7,7 +7,7 @@ import displayNamesJson from "./gameData/displayNames.json";
 import { Cluster } from "./interfaces";
 import { LocalStorage } from "./components/localStorage/LocalStorage";
 import { NaviagationBar } from "./NavigationBar";
-import { Home } from "./Home";
+import { Home } from "./components/productionTree/Home";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -24,6 +24,9 @@ export const App = () => {
     "saved-factories",
     []
   );
+  const availableRecipes = allRecipes.filter(
+    (x) => !x.isAlternate || foundAltRecipes.includes(x.recipeName)
+  );
   return (
     <div className="flex flex-col h-screen">
       <Router>
@@ -31,14 +34,7 @@ export const App = () => {
         <Routes>
           <Route
             path="/satisfactory-planner/"
-            element={
-              <Home
-                foundAltRecipes={foundAltRecipes}
-                setFoundAltRecipes={setFoundAltRecipes}
-                savedFactories={savedFactories}
-                setSavedFactories={setSavedFactories}
-              />
-            }
+            element={<Home availableRecipes={availableRecipes} />}
           />
           <Route
             path="/satisfactory-planner/alt-recipes"

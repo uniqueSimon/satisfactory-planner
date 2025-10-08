@@ -12,6 +12,25 @@ export interface SavedFactory {
   input: { product: string; rate: number }[];
 }
 
+export interface ProductNodeModel {
+  id: string;
+  name: string;
+  rate: number;
+  type: "ROOT" | "NORMAL" | "LEAF" | "SUB_ROOT";
+  parent?: string;
+  children: string[];
+  buildRecipe?: string;
+}
+
+export interface ProductNodeNested {
+  name: string;
+  attributes: {
+    name: string;
+    rate: number;
+    buildRecipe?: string;
+  };
+  children?: ProductNodeNested[];
+}
 export interface Recipe {
   recipeName: string;
   displayName: string;
