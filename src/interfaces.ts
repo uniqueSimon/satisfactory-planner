@@ -18,18 +18,16 @@ export interface ProductNodeModel {
   rate: number;
   type: "ROOT" | "NORMAL" | "LEAF" | "SUB_ROOT";
   parent?: string;
-  children: string[];
   buildRecipe?: string;
+  children: string[];
 }
 
 export interface ProductNodeNested {
+  id: string;
   name: string;
-  attributes: {
-    name: string;
-    rate: number;
-    buildRecipe?: string;
-  };
-  children?: ProductNodeNested[];
+  rate: number;
+  buildRecipe?: string;
+  children: ProductNodeNested[];
 }
 export interface Recipe {
   recipeName: string;

@@ -27,12 +27,7 @@ export const buildTree = (nodes: ProductNodeModel[]): ProductNodeNested => {
   const root = nodes.find((n) => n.type === "ROOT")!;
 
   const build = (node: ProductNodeModel): ProductNodeNested => ({
-    name: node.id,
-    attributes: {
-      name: node.name,
-      rate: node.rate,
-      buildRecipe: node.buildRecipe,
-    },
+    ...node,
     children: node.children.map((cid) => {
       const childNode = nodes.find((n) => n.id === cid)!;
       return build(childNode);

@@ -5,10 +5,44 @@ import { ProductNodeModel, ProductNodeNested, Recipe } from "../../interfaces";
 import { buildTree, getDescendantIds, onRecipeSelect } from "./treeUtils";
 import { ProductionSetupForm } from "./ProductionSetupForm";
 import { ProductNode } from "./ProductNode";
+import { ProductTree } from "./ProductTree";
+
+const sampleTree: ProductNodeNested = {
+  id: "1",
+  name: "IronPlate",
+  rate: 60,
+  children: [
+    {
+      id: "2",
+      name: "IronPlate",
+      rate: 120,
+      children: [
+        {
+          id: "3",
+          name: "IronIngot",
+          rate: 120,
+          children: [],
+        },
+      ],
+    },
+    {
+      id: "4",
+      name: "IronIngot",
+      rate: 120,
+      children: [
+        {
+          id: "5",
+          name: "OreIron",
+          rate: 120,
+          children: [],
+        },
+      ],
+    },
+  ],
+};
 
 export const Home = (props: { availableRecipes: Recipe[] }) => {
   const [productNodes, setProductNodes] = useState<ProductNodeModel[]>([]);
-  console.log("productNodes", productNodes);
   const tree = productNodes.length > 0 ? buildTree(productNodes) : null;
 
   const root = productNodes.find((node) => node.type === "ROOT");
@@ -27,7 +61,7 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
       const increase = rate / oldRate;
       return prev.map((x) => ({ ...x, rate: x.rate * increase }));
     });
-  const handleSelectRecipe = (id: string, recipe: string) => {
+  const onSelectRecipe = (id: string, recipe: string) => {
     setProductNodes((prev) =>
       onRecipeSelect(id, recipe, prev, props.availableRecipes)
     );
@@ -49,26 +83,6 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
         )
     );
   };
-  const containerRef = useRef<HTMLDivElement>(null);
-  const treeRef = useRef<any>(null);
-  const [dimensions, setDimensions] = useState({ width: 400, height: 300 });
-
-  useEffect(() => {
-    // wait for tree to render
-    const svg = containerRef.current?.querySelector("svg");
-    if (!svg) return;
-
-    const g = svg.querySelector("g");
-    if (!g) return;
-
-    const box = g.getBBox();
-    const padding = 100;
-
-    const width = box.width; // + padding * 2;
-    const height = box.height; // + padding * 2;
-
-    setDimensions({ width, height });
-  }, [productNodes]);
 
   return (
     <div className="w-full bg-gray-50">
@@ -80,32 +94,12 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
         setRate={setOutputRate}
       />
       {tree && (
-        <div
-          ref={containerRef}
-          className="inline-block border rounded-lg bg-gray-50"
-          style={{
-            width: dimensions.width,
-            height: dimensions.height,
-          }}
-        >
-          <Tree
-            ref={treeRef}
-            data={tree}
-            zoomable={false}
-            draggable={false}
-            translate={{ x: 80, y: 50 }}
-            orientation="vertical"
-            renderCustomNodeElement={({ nodeDatum }) => (
-              <ProductNode
-                nodeDatum={nodeDatum as unknown as ProductNodeNested}
-                availableRecipes={props.availableRecipes}
-                handleSelectRecipe={handleSelectRecipe}
-                onClearRecipe={onClearRecipe}
-              />
-            )}
-            collapsible={false}
-          />
-        </div>
+        <ProductTree
+          data={tree}
+          availableRecipes={props.availableRecipes}
+          onClearRecipe={onClearRecipe}
+          onSelectRecipe={onSelectRecipe}
+        />
       )}
     </div>
   );

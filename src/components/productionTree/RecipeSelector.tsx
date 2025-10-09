@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { Recipe } from "../../interfaces";
 import {
@@ -8,7 +7,9 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { IconWithTooltipPortal } from "@/reusableComp/IconWithTooltipPortal";
+import { productDisplayNameMapping } from "@/App";
+import { Icon } from "@/reusableComp/Icon";
+import { Tooltip } from "@/reusableComp/Tooltip";
 
 interface Props {
   selectedRecipe?: string;
@@ -18,34 +19,23 @@ interface Props {
 }
 
 export const RecipeSelector = (props: Props) => {
-  const [open, setOpen] = useState(false);
-
   // --- Case 1: No recipe selected ---
   if (!props.selectedRecipe) {
     return (
-      <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
-            onMouseEnter={() => setOpen(true)}
-            onMouseLeave={() => setOpen(false)}
-            className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
-          >
+          <button className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition">
             <Plus size={16} />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-        >
+
+        <DropdownMenuContent align="start">
           {props.availableRecipes.map((recipe) => (
             <DropdownMenuItem
               key={recipe.recipeName}
-              onClick={() => {
-                setOpen(false);
-                props.onSelect(recipe.recipeName);
-              }}
+              onClick={() => props.onSelect(recipe.recipeName)}
             >
+              <Icon item={recipe.producedIn} />
               {recipe.displayName}
             </DropdownMenuItem>
           ))}
@@ -58,12 +48,19 @@ export const RecipeSelector = (props: Props) => {
   const currentRecipe = props.availableRecipes.find(
     (r) => r.recipeName === props.selectedRecipe
   )!;
+  const producedIn = productDisplayNameMapping.get(currentRecipe.producedIn);
   return (
-    <div className="flex items-center gap-2">
-      <span className="flex items-center gap-2 text-sm">
-        <IconWithTooltipPortal item={currentRecipe.producedIn} />
-        {currentRecipe.displayName}
-      </span>
+    <div className="flex flex-col items-center gap-2">
+      <Tooltip
+        tooltip={
+          <div>
+            <div className="font-bold">{producedIn}</div>
+            {currentRecipe.displayName}
+          </div>
+        }
+      >
+        <Icon item={currentRecipe.producedIn} />
+      </Tooltip>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -78,7 +75,6 @@ export const RecipeSelector = (props: Props) => {
           <DropdownMenuItem onClick={() => props.onClear()}>
             Remove recipe
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => {}}>Change recipe…</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
