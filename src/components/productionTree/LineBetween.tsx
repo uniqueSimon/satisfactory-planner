@@ -17,7 +17,7 @@ export const LineBetween = (props: {
   from: HTMLElement | null;
   to: HTMLElement | null;
   container: HTMLElement | null;
-  label: string;
+  label?: string;
 }) => {
   const [coords, setCoords] = useState<Coordinates | null>(null);
 
@@ -39,10 +39,16 @@ export const LineBetween = (props: {
       });
     };
 
+    const mo = new MutationObserver(update);
+    mo.observe(props.container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+
     update();
 
     window.addEventListener("resize", update);
-
     return () => {
       window.removeEventListener("resize", update);
     };
