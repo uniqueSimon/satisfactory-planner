@@ -50,7 +50,7 @@ export const RecipeSelector = (props: Props) => {
   )!;
   const producedIn = productDisplayNameMapping.get(currentRecipe.producedIn);
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center">
       <Tooltip
         tooltip={
           <div>
@@ -71,7 +71,7 @@ export const RecipeSelector = (props: Props) => {
             <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="z-[9999]">
+        <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => props.onClear()}>
             Remove recipe
           </DropdownMenuItem>

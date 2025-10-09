@@ -1,84 +1,62 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { ProductNodeNested, Recipe } from "@/interfaces";
 import { ProductNode } from "./ProductNode";
 import { LineBetween } from "./LineBetween";
+import { useDelay } from "@/reusableComp/useDelay";
+import { useRefInMap } from "@/reusableComp/useRefInMap";
 
-export const ProductTree = ({
-  data,
-  availableRecipes,
-  onSelectRecipe,
-  onClearRecipe,
-}: {
+export const ProductTree = (props: {
   data: ProductNodeNested;
   availableRecipes: Recipe[];
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
 }) => {
-  // One shared ref map for all nodes
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  console.log('nodeRefs',nodeRefs)
+
+  const readyForLines = useDelay(props.data, 1);
+
   return (
-    <div className="relative flex justify-center">
+    <div ref={containerRef} className="relative">
       <RecursiveTree
-        node={data}
-        availableRecipes={availableRecipes}
-        onSelectRecipe={onSelectRecipe}
-        onClearRecipe={onClearRecipe}
+        node={props.data}
+        availableRecipes={props.availableRecipes}
+        onSelectRecipe={props.onSelectRecipe}
+        onClearRecipe={props.onClearRecipe}
         nodeRefs={nodeRefs.current}
       />
-      {/* Render all lines once at the root level */}
-      <LinesLayer node={data} nodeRefs={nodeRefs.current} />
+      {readyForLines && (
+        <RecursiveLines
+          nodeRefs={nodeRefs.current}
+          container={containerRef.current}
+          node={props.data}
+        />
+      )}
     </div>
   );
 };
 
-const RecursiveTree = ({
-  node,
-  availableRecipes,
-  onSelectRecipe,
-  onClearRecipe,
-  nodeRefs,
-}: {
+const RecursiveTree = (props: {
   node: ProductNodeNested;
   availableRecipes: Recipe[];
+  nodeRefs: Map<string, HTMLDivElement>;
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
-  nodeRefs: Map<string, HTMLDivElement>;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Register ref in the map
-  useEffect(() => {
-    if (ref.current) nodeRefs.set(node.id, ref.current);
-    return () => {
-      nodeRefs.delete(node.id);
-    };
-  }, [node.id, ref.current]);
-
-  const hasChildren = node.children && node.children.length > 0;
-
+  const ref = useRefInMap(props.node.id, props.nodeRefs);
+  const hasChildren = props.node.children.length > 0;
+  
   return (
-    <div className="flex flex-col items-center relative">
+    <div className="flex flex-col items-center">
       <div ref={ref}>
-        <ProductNode
-          availableRecipes={availableRecipes}
-          onSelectRecipe={onSelectRecipe}
-          onClearRecipe={onClearRecipe}
-          productNode={node}
-        />
+        <ProductNode {...props} />
       </div>
 
       {hasChildren && (
         <div className="flex mt-8 justify-center">
-          {node.children!.map((child) => (
+          {props.node.children!.map((child) => (
             <div key={child.id} className="mx-4">
-              <RecursiveTree
-                node={child}
-                availableRecipes={availableRecipes}
-                onSelectRecipe={onSelectRecipe}
-                onClearRecipe={onClearRecipe}
-                nodeRefs={nodeRefs}
-              />
+              <RecursiveTree {...props} node={child} />
             </div>
           ))}
         </div>
@@ -88,26 +66,27 @@ const RecursiveTree = ({
 };
 
 /** Draw lines between all parent-child pairs */
-const LinesLayer = ({
-  node,
-  nodeRefs,
-}: {
+const RecursiveLines = (props: {
   node: ProductNodeNested;
   nodeRefs: Map<string, HTMLDivElement>;
+  container: HTMLDivElement | null;
 }) => {
-  console.log('node.children.length',node.children.length)
-  if (!node.children || node.children.length === 0) return null;
-
+  if (props.node.children.length === 0) return null;
   return (
     <>
-      {node.children.map((child) => (
+      {props.node.children.map((child) => (
         <React.Fragment key={child.id}>
           <LineBetween
-            from={nodeRefs.get(node.id) ?? null}
-            to={nodeRefs.get(child.id) ?? null}
+            from={props.nodeRefs.get(props.node.id) ?? null}
+            to={props.nodeRefs.get(child.id) ?? null}
             label={`${child.rate.toFixed(1)} /min`}
+            container={props.container}
           />
-          <LinesLayer node={child} nodeRefs={nodeRefs} />
+          <RecursiveLines
+            node={child}
+            nodeRefs={props.nodeRefs}
+            container={props.container}
+          />
         </React.Fragment>
       ))}
     </>

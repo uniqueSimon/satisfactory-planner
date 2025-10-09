@@ -1,47 +1,63 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-interface LineBetweenProps {
-  from: HTMLElement | null;
-  to: HTMLElement | null;
-  label?: string;
+interface Coordinates {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  w: number;
+  h: number;
 }
 
-export const LineBetween: React.FC<LineBetweenProps> = ({
-  from,
-  to,
-  label,
+/**
+ * Draws a straight SVG line + optional label between `from` and `to`.
+ * Coordinates are relative to `container`.
+ */
+export const LineBetween = (props: {
+  from: HTMLElement | null;
+  to: HTMLElement | null;
+  container: HTMLElement | null;
+  label: string;
 }) => {
-  const [coords, setCoords] = useState({ x1: 0, y1: 0, x2: 0, y2: 0 });
+  const [coords, setCoords] = useState<Coordinates | null>(null);
 
-  console.log('from',from)
-  console.log('to',to)
   useEffect(() => {
-    if (!from || !to) return;
+    if (!props.from || !props.to || !props.container) return;
+
     const update = () => {
-      const f = from.getBoundingClientRect();
-      const t = to.getBoundingClientRect();
+      const cRect = props.container!.getBoundingClientRect();
+      const f = props.from!.getBoundingClientRect();
+      const t = props.to!.getBoundingClientRect();
+
       setCoords({
-        x1: f.left + f.width / 2,
-        y1: f.bottom,
-        x2: t.left + t.width / 2,
-        y2: t.top,
-      });
-      console.log({
-        x1: f.left + f.width / 2,
-        y1: f.bottom,
-        x2: t.left + t.width / 2,
-        y2: t.top,
+        x1: f.left + f.width / 2 - cRect.left,
+        y1: f.bottom - cRect.top,
+        x2: t.left + t.width / 2 - cRect.left,
+        y2: t.top - cRect.top,
+        w: cRect.width,
+        h: cRect.height,
       });
     };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [from, to]);
 
-  if (!from || !to) return null;
+    update();
+
+    window.addEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("resize", update);
+    };
+  }, [props.from, props.to, props.container]);
+
+  if (!coords) return null;
 
   return (
-    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
+    <svg
+      className="absolute top-0 left-0 pointer-events-none"
+      width={coords.w}
+      height={coords.h}
+      viewBox={`0 0 ${coords.w} ${coords.h}`}
+      style={{ overflow: "visible" }}
+    >
       <line
         x1={coords.x1}
         y1={coords.y1}
@@ -49,16 +65,21 @@ export const LineBetween: React.FC<LineBetweenProps> = ({
         y2={coords.y2}
         stroke="#888"
         strokeWidth={1.5}
+        strokeLinecap="round"
       />
-      {label && (
+      {props.label && (
         <text
-          x={(coords.x1 + coords.x2) / 2}
-          y={(coords.y1 + coords.y2) / 2 - 4}
+          x={(coords.x1 + 2 * coords.x2) / 3}
+          y={(coords.y1 + coords.y2) / 2}
           textAnchor="middle"
-          fill="#444"
+          alignmentBaseline="middle"
           fontSize="10"
+          fill="#444"
+          stroke="white"
+          strokeWidth="8"
+          paintOrder="stroke"
         >
-          {label}
+          {props.label}
         </text>
       )}
     </svg>

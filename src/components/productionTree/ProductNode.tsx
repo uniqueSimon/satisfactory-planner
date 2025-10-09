@@ -3,19 +3,17 @@ import { RecipeSelector } from "./RecipeSelector";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 
 export const ProductNode = (props: {
-  productNode: ProductNodeNested;
+  node: ProductNodeNested;
   availableRecipes: Recipe[];
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
 }) => {
-  const { id, name, buildRecipe } = props.productNode;
+  const { id, name, buildRecipe } = props.node;
   const recipes = props.availableRecipes.filter((x) => x.product.name === name);
   return (
-    <div className="flex flex-col items-center bg-white shadow-lg rounded-xl p-2 border border-gray-200 text-center">
-      <div className="flex gap-2 items-center">
-        <IconWithTooltip item={name} />
-      </div>
-      <div className="w-full h-0.5 bg-gray-300" />
+    <div className="flex flex-col items-center bg-white shadow-lg rounded-xl px-2 border border-gray-200 text-center">
+      <IconWithTooltip item={name} />
+      <div className="w-full h-0.5 mb-1 bg-gray-400" />
       <RecipeSelector
         selectedRecipe={buildRecipe}
         availableRecipes={recipes}
