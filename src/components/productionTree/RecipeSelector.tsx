@@ -1,5 +1,5 @@
 import { MoreHorizontal, Plus } from "lucide-react";
-import { Recipe } from "../../interfaces";
+import { NodeType, Recipe } from "../../interfaces";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -39,7 +39,9 @@ export const RecipeToAdd = (props: {
 export const RecipeSelected = (props: {
   selectedRecipe: string;
   availableRecipes: Recipe[];
+  nodeType: NodeType;
   onClear: () => void;
+  onDetachSubtree: () => void;
 }) => {
   const currentRecipe = props.availableRecipes.find(
     (r) => r.recipeName === props.selectedRecipe
@@ -47,6 +49,7 @@ export const RecipeSelected = (props: {
   const producedIn = productDisplayNameMapping.get(currentRecipe.producedIn);
   return (
     <div className="flex flex-col items-center">
+      <div className="w-full h-0.5 mb-1 bg-gray-400" />
       <Tooltip
         tooltip={
           <div>
@@ -71,9 +74,11 @@ export const RecipeSelected = (props: {
           <DropdownMenuItem onClick={() => props.onClear()}>
             Remove recipe
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => props.onClear()}>
-            Move to separate tree
-          </DropdownMenuItem>
+          {props.nodeType !== "ROOT" && props.nodeType !== "SUB_ROOT" && (
+            <DropdownMenuItem onClick={() => props.onDetachSubtree()}>
+              Create / Join to subtree
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

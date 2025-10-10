@@ -1,14 +1,21 @@
 import { v4 as uuidv4 } from "uuid";
 import { useRef, useState } from "react";
-import { ProductNodeModel, Recipe } from "../../interfaces";
-import { buildTree, getDescendantIds, onRecipeSelect } from "./treeUtils";
+import { ProductNode, Recipe } from "../../interfaces";
+import {
+  buildTree,
+  detachSubtree,
+  getDescendantIds,
+  onRecipeSelect,
+} from "./treeUtils";
 import { ProductionSetupForm } from "./ProductionSetupForm";
 import { RecursiveTree } from "./RecursiveTree";
 
 export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
-  const [productNodes, setProductNodes] = useState<ProductNodeModel[]>([]);
-  const tree = productNodes.length > 0 ? buildTree(productNodes) : null;
+  const [productNodes, setProductNodes] = useState<ProductNode[]>([]);
+  console.log(productNodes);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const forest = productNodes.length > 0 ? buildTree(productNodes) : null;
 
   const root = productNodes.find((node) => node.type === "ROOT");
   const rootRecipe = root?.buildRecipe
@@ -48,6 +55,10 @@ export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
         )
     );
   };
+  const onDetachSubtree = (id: string) => {
+    setProductNodes((prev) => detachSubtree(id, prev, props.availableRecipes));
+  };
+
   return (
     <div className="w-full bg-gray-50">
       <ProductionSetupForm
@@ -57,15 +68,30 @@ export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
         setProduct={setProductToProduce}
         setRate={setOutputRate}
       />
-      {tree && (
-        <div ref={containerRef} className="relative">
-          <RecursiveTree
-            node={tree}
-            availableRecipes={props.availableRecipes}
-            onClearRecipe={onClearRecipe}
-            onSelectRecipe={onSelectRecipe}
-            container={containerRef.current}
-          />
+      {forest && (
+        <div ref={containerRef} className="relative flex">
+          <div>
+            <RecursiveTree
+              node={forest.mainTree}
+              availableRecipes={props.availableRecipes}
+              onClearRecipe={onClearRecipe}
+              onSelectRecipe={onSelectRecipe}
+              onDetachSubtree={onDetachSubtree}
+              container={containerRef.current}
+            />
+          </div>
+          {forest.subTrees.map((subTree, i) => (
+            <div key={i}>
+              <RecursiveTree
+                node={subTree}
+                availableRecipes={props.availableRecipes}
+                onClearRecipe={onClearRecipe}
+                onSelectRecipe={onSelectRecipe}
+                onDetachSubtree={onDetachSubtree}
+                container={containerRef.current}
+              />
+            </div>
+          ))}
         </div>
       )}
     </div>

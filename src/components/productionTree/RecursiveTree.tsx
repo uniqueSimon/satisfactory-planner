@@ -10,6 +10,7 @@ export const RecursiveTree = (props: {
   availableRecipes: Recipe[];
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
+  onDetachSubtree: (id: string) => void;
   container: HTMLElement | null;
 }) => {
   const { ref, divEle } = useUpdatingRef();
