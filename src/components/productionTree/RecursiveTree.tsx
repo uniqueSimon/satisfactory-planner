@@ -1,31 +1,10 @@
-import React, { useRef } from "react";
+import React from "react";
 import { ProductNodeNested, Recipe } from "@/interfaces";
 import { ProductNode } from "./ProductNode";
 import { LineBetween } from "./LineBetween";
 import { useUpdatingRef } from "@/reusableComp/useUpdatingRef";
 
-export const ProductTree = (props: {
-  data: ProductNodeNested;
-  availableRecipes: Recipe[];
-  onSelectRecipe: (id: string, recipe: string) => void;
-  onClearRecipe: (id: string) => void;
-}) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  return (
-    <div ref={containerRef} className="relative">
-      <RecursiveTree
-        container={containerRef.current}
-        node={props.data}
-        availableRecipes={props.availableRecipes}
-        onSelectRecipe={props.onSelectRecipe}
-        onClearRecipe={props.onClearRecipe}
-      />
-    </div>
-  );
-};
-
-const RecursiveTree = (props: {
+export const RecursiveTree = (props: {
   ref?: React.RefObject<HTMLDivElement | null>;
   node: ProductNodeNested;
   availableRecipes: Recipe[];

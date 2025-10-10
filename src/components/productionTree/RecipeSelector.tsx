@@ -11,40 +11,36 @@ import { productDisplayNameMapping } from "@/App";
 import { Icon } from "@/reusableComp/Icon";
 import { Tooltip } from "@/reusableComp/Tooltip";
 
-interface Props {
-  selectedRecipe?: string;
+export const RecipeToAdd = (props: {
   availableRecipes: Recipe[];
   onSelect: (recipe: string) => void;
+}) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <button className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition">
+        <Plus size={16} />
+      </button>
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent align="start">
+      {props.availableRecipes.map((recipe) => (
+        <DropdownMenuItem
+          key={recipe.recipeName}
+          onClick={() => props.onSelect(recipe.recipeName)}
+        >
+          <Icon item={recipe.producedIn} />
+          {recipe.displayName}
+        </DropdownMenuItem>
+      ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
+
+export const RecipeSelected = (props: {
+  selectedRecipe: string;
+  availableRecipes: Recipe[];
   onClear: () => void;
-}
-
-export const RecipeSelector = (props: Props) => {
-  // --- Case 1: No recipe selected ---
-  if (!props.selectedRecipe) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition">
-            <Plus size={16} />
-          </button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="start">
-          {props.availableRecipes.map((recipe) => (
-            <DropdownMenuItem
-              key={recipe.recipeName}
-              onClick={() => props.onSelect(recipe.recipeName)}
-            >
-              <Icon item={recipe.producedIn} />
-              {recipe.displayName}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
-  // --- Case 2: Recipe selected ---
+}) => {
   const currentRecipe = props.availableRecipes.find(
     (r) => r.recipeName === props.selectedRecipe
   )!;
@@ -74,6 +70,9 @@ export const RecipeSelector = (props: Props) => {
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => props.onClear()}>
             Remove recipe
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => props.onClear()}>
+            Move to separate tree
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

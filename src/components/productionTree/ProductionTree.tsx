@@ -1,49 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
-import { useEffect, useRef, useState } from "react";
-import Tree, { Point, TreeNodeDatum } from "react-d3-tree";
-import { ProductNodeModel, ProductNodeNested, Recipe } from "../../interfaces";
+import { useRef, useState } from "react";
+import { ProductNodeModel, Recipe } from "../../interfaces";
 import { buildTree, getDescendantIds, onRecipeSelect } from "./treeUtils";
 import { ProductionSetupForm } from "./ProductionSetupForm";
-import { ProductNode } from "./ProductNode";
-import { ProductTree } from "./ProductTree";
+import { RecursiveTree } from "./RecursiveTree";
 
-const sampleTree: ProductNodeNested = {
-  id: "1",
-  name: "IronPlate",
-  rate: 60,
-  children: [
-    {
-      id: "2",
-      name: "IronPlate",
-      rate: 120,
-      children: [
-        {
-          id: "3",
-          name: "IronIngot",
-          rate: 120,
-          children: [],
-        },
-      ],
-    },
-    {
-      id: "4",
-      name: "IronIngot",
-      rate: 120,
-      children: [
-        {
-          id: "5",
-          name: "OreIron",
-          rate: 120,
-          children: [],
-        },
-      ],
-    },
-  ],
-};
-
-export const Home = (props: { availableRecipes: Recipe[] }) => {
+export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
   const [productNodes, setProductNodes] = useState<ProductNodeModel[]>([]);
   const tree = productNodes.length > 0 ? buildTree(productNodes) : null;
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const root = productNodes.find((node) => node.type === "ROOT");
   const rootRecipe = root?.buildRecipe
@@ -83,7 +48,6 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
         )
     );
   };
-
   return (
     <div className="w-full bg-gray-50">
       <ProductionSetupForm
@@ -94,12 +58,15 @@ export const Home = (props: { availableRecipes: Recipe[] }) => {
         setRate={setOutputRate}
       />
       {tree && (
-        <ProductTree
-          data={tree}
-          availableRecipes={props.availableRecipes}
-          onClearRecipe={onClearRecipe}
-          onSelectRecipe={onSelectRecipe}
-        />
+        <div ref={containerRef} className="relative">
+          <RecursiveTree
+            node={tree}
+            availableRecipes={props.availableRecipes}
+            onClearRecipe={onClearRecipe}
+            onSelectRecipe={onSelectRecipe}
+            container={containerRef.current}
+          />
+        </div>
       )}
     </div>
   );

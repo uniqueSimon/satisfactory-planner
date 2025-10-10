@@ -7,7 +7,7 @@ import displayNamesJson from "./gameData/displayNames.json";
 import { Cluster } from "./interfaces";
 import { LocalStorage } from "./components/localStorage/LocalStorage";
 import { NaviagationBar } from "./NavigationBar";
-import { Home } from "./components/productionTree/Home";
+import { ProductionTree } from "./components/productionTree/ProductionTree";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -34,7 +34,7 @@ export const App = () => {
         <Routes>
           <Route
             path="/satisfactory-planner/"
-            element={<Home availableRecipes={availableRecipes} />}
+            element={<ProductionTree availableRecipes={availableRecipes} />}
           />
           <Route
             path="/satisfactory-planner/alt-recipes"
