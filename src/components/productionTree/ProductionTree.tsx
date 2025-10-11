@@ -1,14 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { useRef, useState } from "react";
 import { ProductNode, Recipe } from "../../interfaces";
-import {
-  buildTree,
-  detachSubtree,
-  getDescendantIds,
-  onRecipeSelect,
-} from "./treeUtils";
 import { ProductionSetupForm } from "./ProductionSetupForm";
 import { RecursiveTree } from "./RecursiveTree";
+import { buildTree } from "./treeOperations/buildTree";
+import { selectRecipe } from "./treeOperations/selectRecipe";
+import { clearRecipe } from "./treeOperations/clearRecipe";
+import { moveToSubtree } from "./treeOperations/moveToSubtree";
 
 export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
   const [productNodes, setProductNodes] = useState<ProductNode[]>([]);
@@ -22,10 +20,21 @@ export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
     ? props.availableRecipes.find((r) => r.recipeName === root.buildRecipe)
     : undefined;
 
-  const setProductToProduce = (product: string) =>
+  const setProductToProduce = (product: string) => {
+    const baseRecipe = props.availableRecipes.find(
+      (r) => r.product.name === product && !r.isAlternate
+    )!;
+    const rateOneMachine = (baseRecipe.product.amount / baseRecipe.time) * 60;
     setProductNodes([
-      { id: uuidv4(), name: product, rate: 60, type: "ROOT", children: [] },
+      {
+        id: uuidv4(),
+        name: product,
+        rate: rateOneMachine,
+        type: "ROOT",
+        children: [],
+      },
     ]);
+  };
   const setOutputRate = (rate: number) =>
     setProductNodes((prev) => {
       const root = prev.find((p) => p.type === "ROOT")!;
@@ -35,28 +44,14 @@ export const ProductionTree = (props: { availableRecipes: Recipe[] }) => {
     });
   const onSelectRecipe = (id: string, recipe: string) => {
     setProductNodes((prev) =>
-      onRecipeSelect(id, recipe, prev, props.availableRecipes)
+      selectRecipe(prev, id, recipe, props.availableRecipes)
     );
   };
   const onClearRecipe = (id: string) => {
-    const idsToRemove = getDescendantIds(productNodes, id);
-    setProductNodes((prev) =>
-      prev
-        .filter((n) => !idsToRemove.includes(n.id))
-        .map((n) =>
-          n.id === id
-            ? {
-                ...n,
-                buildRecipe: undefined,
-                type: n.type === "ROOT" ? "ROOT" : "LEAF",
-                children: [],
-              }
-            : n
-        )
-    );
+    setProductNodes((prev) => clearRecipe(prev, id));
   };
   const onDetachSubtree = (id: string) => {
-    setProductNodes((prev) => detachSubtree(id, prev, props.availableRecipes));
+    setProductNodes((prev) => moveToSubtree(prev, id, props.availableRecipes));
   };
 
   return (
