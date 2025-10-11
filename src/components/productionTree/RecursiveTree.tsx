@@ -7,7 +7,6 @@ import { useUpdatingRef } from "@/reusableComp/useUpdatingRef";
 export const RecursiveTree = (props: {
   ref?: React.RefObject<HTMLDivElement | null>;
   node: ProductNodeNested;
-  availableRecipes: Recipe[];
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;

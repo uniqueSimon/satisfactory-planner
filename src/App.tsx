@@ -8,6 +8,7 @@ import { Cluster } from "./interfaces";
 import { LocalStorage } from "./components/localStorage/LocalStorage";
 import { NaviagationBar } from "./NavigationBar";
 import { ProductionTree } from "./components/productionTree/ProductionTree";
+import { RecipesProvider } from "./RecipesContext";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -16,47 +17,32 @@ export const productDisplayNameMapping = new Map(
 );
 
 export const App = () => {
-  const [foundAltRecipes, setFoundAltRecipes] = useLocalStorage<string[]>(
-    "found-alt-recipes",
-    []
-  );
   const [savedFactories, setSavedFactories] = useLocalStorage<Cluster[]>(
     "saved-factories",
     []
-  );
-  const availableRecipes = allRecipes.filter(
-    (x) => !x.isAlternate || foundAltRecipes.includes(x.recipeName)
   );
   return (
     <div className="flex flex-col h-screen">
       <Router>
         <NaviagationBar />
-        <Routes>
-          <Route
-            path="/satisfactory-planner/"
-            element={<ProductionTree availableRecipes={availableRecipes} />}
-          />
-          <Route
-            path="/satisfactory-planner/alt-recipes"
-            element={
-              <AlternateRecipes
-                foundAltRecipes={foundAltRecipes}
-                setFoundAltRecipes={setFoundAltRecipes}
-              />
-            }
-          />
-          <Route
-            path="/satisfactory-planner/local-storage"
-            element={
-              <LocalStorage
-                foundAltRecipes={foundAltRecipes}
-                savedFactories={savedFactories}
-                setFoundAltRecipes={setFoundAltRecipes}
-                setSavedFactories={setSavedFactories}
-              />
-            }
-          />
-        </Routes>
+        <RecipesProvider>
+          <Routes>
+            <Route path="/satisfactory-planner/" element={<ProductionTree />} />
+            <Route
+              path="/satisfactory-planner/alt-recipes"
+              element={<AlternateRecipes />}
+            />
+            <Route
+              path="/satisfactory-planner/local-storage"
+              element={
+                <LocalStorage
+                  savedFactories={savedFactories}
+                  setSavedFactories={setSavedFactories}
+                />
+              }
+            />
+          </Routes>
+        </RecipesProvider>
       </Router>
     </div>
   );

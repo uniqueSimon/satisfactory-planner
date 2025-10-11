@@ -1,17 +1,18 @@
-import { ProductNodeNested, Recipe } from "@/interfaces";
+import { ProductNodeNested } from "@/interfaces";
 import { RecipeSelected, RecipeToAdd } from "./RecipeSelector";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { cn } from "@/lib/utils";
+import { useRecipes } from "@/RecipesContext";
 
 export const ProductNode = (props: {
   node: ProductNodeNested;
-  availableRecipes: Recipe[];
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
 }) => {
+  const { availableRecipes } = useRecipes();
   const { id, name, buildRecipe, rate, type, subRootPointer } = props.node;
-  const recipes = props.availableRecipes.filter((x) => x.product.name === name);
+  const recipes = availableRecipes.filter((x) => x.product.name === name);
   const label = `${rate.toFixed(1)} /min`;
   return (
     <div
