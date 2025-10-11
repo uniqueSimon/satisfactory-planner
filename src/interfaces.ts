@@ -4,14 +4,9 @@ export interface Cluster {
 }
 
 export interface SavedFactory {
-  id: number;
-  productToProduce: string;
-  wantedOutputRate: number;
-  selectedRecipes: string[];
-  dedicatedProducts: string[];
-  input: { product: string; rate: number }[];
+  id: string;
+  productNodes: ProductNode[];
 }
-
 /**
   Just need ROOT and SUB_ROOT.
   - LEAF has no children.

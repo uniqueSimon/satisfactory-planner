@@ -9,8 +9,8 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 
 export const useDraggable = (
-  id: number,
-  onDrop: (sourceId: number, targetId: number, edge: "left" | "right") => void
+  id: string,
+  onDrop: (sourceId: string, targetId: string, edge: "left" | "right") => void
 ) => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -35,7 +35,7 @@ export const useDraggable = (
       },
       onDrop: ({ source, self }) => {
         const edge = extractClosestEdge(self.data) as "left" | "right";
-        onDrop(source.data.id as number, id, edge);
+        onDrop(source.data.id as string, id, edge);
       },
     });
     return () => {

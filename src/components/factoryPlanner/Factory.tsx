@@ -10,20 +10,23 @@ export const Factory = (props: {
   selected: boolean;
   isHovered: boolean;
   hoveredAccumulatedProduct: string | null;
-  onSelect: (id: number) => void;
-  setHoveredFactoryId: (id: number | null) => void;
+  onSelect: (id: string) => void;
+  setHoveredFactoryId: (id: string | null) => void;
   onDrop: (
-    sourceId: number,
-    targetId: number,
+    sourceId: string,
+    targetId: string,
     closestEdge: "left" | "right"
   ) => void;
 }) => {
   const ref = useDraggable(props.factory.id, props.onDrop);
-  const hoveredIsOutput =
-    props.factory.productToProduce === props.hoveredAccumulatedProduct;
-  const hoveredIsInput = props.factory.input.some(
+  const hoveredIsOutput = false;
+  //props.factory.productToProduce === props.hoveredAccumulatedProduct;
+  const hoveredIsInput = false; /* props.factory.input.some(
     (x) => x.product === props.hoveredAccumulatedProduct
-  );
+  ); */
+  const productNodes = props.factory.productNodes;
+  const root = productNodes.find((node) => node.type === "ROOT")!;
+
   return (
     <div
       ref={ref}
@@ -45,8 +48,8 @@ export const Factory = (props: {
         onClick={() => props.onSelect(props.factory.id)}
       >
         <div className="flex items-center">
-          {Math.round(props.factory.wantedOutputRate * 100) / 100}/min
-          <IconWithTooltip item={props.factory.productToProduce} />
+          {Math.round(root?.rate * 100) / 100}/min
+          <IconWithTooltip item={root.name} />
         </div>
       </Button>
       {props.isHovered && (

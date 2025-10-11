@@ -10,15 +10,15 @@ import { Cluster } from "@/interfaces";
 export const FactoryPlanner = (props: {
   savedFactories: Cluster[];
   setSavedFactories: (newValue: Cluster[]) => void;
-  clickedFactoryId: number | null;
-  setClickedFactoryId: (factoryId: number | null) => void;
+  clickedFactoryId: string | null;
+  setClickedFactoryId: (factoryId: string | null) => void;
 }) => {
-  const [hoveredFactoryId, setHoveredFactoryId] = useState<number | null>();
+  const [hoveredFactoryId, setHoveredFactoryId] = useState<string | null>();
   const [showResources, setShowResources] = useState(false);
   const combinedSavedFactories = props.savedFactories
     .map((x) => x.factories)
     .flat();
-  const rateBalance = accumulateRates(props.savedFactories);
+  //const rateBalance = accumulateRates(props.savedFactories);
   return (
     <CustomCard>
       <Form.Item label="Show resources" style={{ margin: 0 }}>
@@ -37,7 +37,7 @@ export const FactoryPlanner = (props: {
               )
             )
           }
-          rateBalance={rateBalance[index]}
+          //rateBalance={rateBalance[index]}
           setHoveredFactoryId={setHoveredFactoryId}
           selectedFactoryId={props.clickedFactoryId}
           onChooseFactory={props.setClickedFactoryId}

@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { Cluster, SavedFactory } from "./interfaces";
-import { allRecipes } from "./App";
 import { useResizeDrawer } from "./components/factoryDetails/useResizeDrawer";
 import { twMerge } from "tailwind-merge";
 import { Typography } from "antd";
 import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
-import { FactoryDetails } from "./components/factoryDetails/FactoryDetails";
+import { ProductionTree } from "./components/productionTree/ProductionTree";
 
 export const Home = (props: {
-  foundAltRecipes: string[];
-  setFoundAltRecipes: (recipes: string[]) => void;
   savedFactories: Cluster[];
   setSavedFactories: (newValue: Cluster[]) => void;
 }) => {
-  const [clickedFactoryId, setClickedFactoryId] = useState<number | null>(null);
+  const [clickedFactoryId, setClickedFactoryId] = useState<string | null>(null);
 
   const combinedSavedFactories = props.savedFactories
     .map((x) => x.factories)
@@ -22,13 +19,9 @@ export const Home = (props: {
     (x) => x.id === clickedFactoryId
   );
 
-  const availableRecipes = allRecipes.filter(
-    (x) => !x.isAlternate || props.foundAltRecipes.includes(x.recipeName)
-  );
-
   const { height, isDragging, handleMouseDown } = useResizeDrawer();
 
-  const onDelete = (id: number) => {
+  const onDelete = (id: string) => {
     setClickedFactoryId(null);
     props.setSavedFactories(
       props.savedFactories.map((cluster) => ({
@@ -80,13 +73,14 @@ export const Home = (props: {
         style={{ height: selectedSavedSettings ? height : 0 }}
       >
         {selectedSavedSettings && (
-          <FactoryDetails
+          <ProductionTree
+            savedFactory={selectedSavedSettings}
+            setProductNodes={(productNodes) =>
+              onChangeFactory({ id: selectedSavedSettings.id, productNodes })
+            }
             onClose={() => setClickedFactoryId(null)}
             onDelete={onDelete}
             onCopy={onCopy}
-            availableRecipes={availableRecipes}
-            savedFactory={selectedSavedSettings}
-            setSavedFactory={onChangeFactory}
           />
         )}
       </div>
