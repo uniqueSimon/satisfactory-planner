@@ -12,12 +12,12 @@ export interface SavedFactory {
   input: { product: string; rate: number }[];
 }
 
-export type NodeType =
-  | "ROOT"
-  | "NORMAL"
-  | "LEAF"
-  | "SUB_ROOT"
-  | "SUB_ROOT_POINTER";
+/**
+  Just need ROOT and SUB_ROOT.
+  - LEAF has no children.
+  - SUB_ROOT_Pointer has a pointer
+*/
+export type NodeType = "ROOT" | "SUB_ROOT" | "NORMAL";
 
 interface ProductNodeCommon {
   id: string;

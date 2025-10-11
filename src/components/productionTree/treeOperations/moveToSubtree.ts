@@ -38,7 +38,6 @@ export const moveToSubtree = (
 
 const convertToPointer = (node: ProductNode, pointer: string): ProductNode => ({
   ...node,
-  type: "SUB_ROOT_POINTER",
   subRootPointer: pointer,
   buildRecipe: undefined,
   children: [],

@@ -20,7 +20,6 @@ export const selectRecipe = (
     ...node,
     buildRecipe,
     children: newChildren.map((c) => c.id),
-    type: node.type === "LEAF" ? "NORMAL" : node.type,
   };
 
   return [
@@ -32,6 +31,6 @@ export const selectRecipe = (
 const createChild = (name: string, rate: number): ProductNode => {
   const children = [] as string[];
   const id = uuidv4();
-  const type = "LEAF";
+  const type = "NORMAL";
   return { id, name, rate, type, children };
 };

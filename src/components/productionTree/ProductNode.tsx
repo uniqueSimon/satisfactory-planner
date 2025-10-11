@@ -10,14 +10,14 @@ export const ProductNode = (props: {
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
 }) => {
-  const { id, name, buildRecipe, rate, type } = props.node;
+  const { id, name, buildRecipe, rate, type, subRootPointer } = props.node;
   const recipes = props.availableRecipes.filter((x) => x.product.name === name);
   const label = `${rate.toFixed(1)} /min`;
   return (
     <div
       className={cn(
         "flex flex-col items-center bg-white shadow-lg rounded-xl px-2 border border-gray-200 text-center",
-        type === "SUB_ROOT_POINTER" && "bg-gray-300"
+        subRootPointer && "bg-gray-300"
       )}
     >
       {(type === "SUB_ROOT" || type === "ROOT") && (
@@ -32,14 +32,12 @@ export const ProductNode = (props: {
           onClear={() => props.onClearRecipe(id)}
           onDetachSubtree={() => props.onDetachSubtree(id)}
         />
-      ) : type === "SUB_ROOT_POINTER" ? (
-        <div></div>
-      ) : recipes.length > 0 ? (
+      ) : subRootPointer || recipes.length === 0 ? null : (
         <RecipeToAdd
           availableRecipes={recipes}
           onSelect={(recipe) => props.onSelectRecipe(id, recipe)}
         />
-      ) : null}
+      )}
     </div>
   );
 };
