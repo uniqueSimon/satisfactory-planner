@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 export const Button = (props: {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) => {
@@ -18,9 +18,9 @@ export const Button = (props: {
     <button
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
-      onClick={() => {
+      onClick={(e) => {
         handleClick();
-        props.onClick();
+        props.onClick(e);
       }}
       type="button"
       className={twMerge(

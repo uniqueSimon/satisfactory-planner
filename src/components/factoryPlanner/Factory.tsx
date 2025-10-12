@@ -55,7 +55,7 @@ export const Factory = (props: {
         </div>
       </Button>
       {props.isHovered && (
-        <div className="fixed bottom-4 right-4 z-100 bg-gray-200 rounded border-2">
+        <div className="absolute bottom-4 right-4 z-100 bg-gray-200 rounded border-2">
           <DetailedView savedSetting={props.factory} />
         </div>
       )}

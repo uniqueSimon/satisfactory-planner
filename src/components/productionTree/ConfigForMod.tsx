@@ -1,7 +1,8 @@
 import { ProductNode } from "@/interfaces";
 import { useRecipes } from "@/RecipesContext";
 import { Button } from "@/reusableComp/Button";
-import { Check, Copy } from "lucide-react";
+import { Collapse } from "@/reusableComp/Collapse";
+import { Check, ClipboardPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface FactoryRow {
@@ -66,24 +67,24 @@ export const ConfigForMod = (props: { nodes: ProductNode[] }) => {
   };
 
   return (
-    <div className="flex p-2 gap-2">
-      <h2>Export to Factory Spawner</h2>
-      <Button onClick={handleCopy}>
-        {copied ? (
-          <>
-            <Check className="w-4 h-4" />
-            Copied!
-          </>
-        ) : (
-          <>
-            <Copy className="w-4 h-4" />
-            Copy to Clipboard
-          </>
-        )}
-      </Button>
+    <Collapse
+      title={
+        <div className="flex items-center gap-2">
+          <div>Export to Factory Spawner</div>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCopy();
+            }}
+          >
+            {copied ? <Check /> : <ClipboardPlus />}
+          </Button>
+        </div>
+      }
+    >
       <pre className="bg-gray-900 text-gray-100 p-3 rounded-xl overflow-x-auto text-sm whitespace-pre-wrap">
         {exportString}
       </pre>
-    </div>
+    </Collapse>
   );
 };

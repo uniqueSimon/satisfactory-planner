@@ -1,46 +1,72 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Cluster } from "./interfaces";
-import { useResizeDrawer } from "./components/factoryDetails/useResizeDrawer";
-import { twMerge } from "tailwind-merge";
-import { Typography } from "antd";
 import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
 import { Drawer } from "./Drawer";
+import { twMerge } from "tailwind-merge";
 
 export const Home = (props: {
   savedFactories: Cluster[];
   setSavedFactories: (newValue: Cluster[]) => void;
 }) => {
   const [clickedFactoryId, setClickedFactoryId] = useState<string | null>(null);
-  const { height, isDragging, handleMouseDown } = useResizeDrawer();
+
+  const [drawerWidth, setDrawerWidth] = useState(400);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging) {
+        const newWidth = window.innerWidth - e.clientX;
+        setDrawerWidth(Math.max(200, Math.min(newWidth, 800)));
+      }
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
 
   return (
-    <>
-      <FactoryPlanner
-        clickedFactoryId={clickedFactoryId}
-        savedFactories={props.savedFactories}
-        setClickedFactoryId={setClickedFactoryId}
-        setSavedFactories={props.setSavedFactories}
-      />
-      <div
-        onMouseDown={handleMouseDown}
-        className="h-2 bg-gray-400 cursor-row-resize"
-      />
-      <div
-        className={twMerge(
-          "bg-gray-200",
-          !isDragging && "transition-all duration-300 ease-in-out"
-        )}
-        style={{ height: clickedFactoryId ? height : 0 }}
-      >
-        {clickedFactoryId && (
-          <Drawer
-            clickedFactoryId={clickedFactoryId}
-            setClickedFactoryId={setClickedFactoryId}
-            savedFactories={props.savedFactories}
-            setSavedFactories={props.setSavedFactories}
-          />
-        )}
+    <div className="flex h-full">
+      {/* Main content */}
+      <div className="flex-1 transition-all duration-300">
+        <FactoryPlanner
+          clickedFactoryId={clickedFactoryId}
+          savedFactories={props.savedFactories}
+          setClickedFactoryId={setClickedFactoryId}
+          setSavedFactories={props.setSavedFactories}
+        />
       </div>
-    </>
+
+      {/* Drawer */}
+      {clickedFactoryId && (
+        <>
+          <div
+            className="w-2 cursor-col-resize bg-gray-400"
+            onMouseDown={() => setIsDragging(true)}
+          />
+          <div
+            className={twMerge(
+              "bg-gray-200",
+              !isDragging && "transition-all duration-300 ease-in-out"
+            )}
+            style={{ width: drawerWidth }}
+          >
+            <Drawer
+              clickedFactoryId={clickedFactoryId}
+              setClickedFactoryId={setClickedFactoryId}
+              savedFactories={props.savedFactories}
+              setSavedFactories={props.setSavedFactories}
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 };
