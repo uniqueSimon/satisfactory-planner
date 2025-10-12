@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { allProducts, productDisplayNameMapping } from "../../App";
 import { Recipe } from "../../interfaces";
 import { ProductCombobox } from "./ProductCombobox";
+import { useEffect, useState } from "react";
 
 interface Props {
   product: string;
@@ -10,18 +11,29 @@ interface Props {
   setProduct: (product: string) => void;
   setRate: (rate: number) => void;
 }
+
+const determineNumberOfMachines = (rate: number, recipe: Recipe) =>
+  rate / ((recipe.product.amount / recipe.time) * 60);
+
 export const ProductionSetupForm = (props: Props) => {
   const numberOfRootMachines = props.rootRecipe
-    ? props.rate /
-      ((props.rootRecipe.product.amount / props.rootRecipe.time) * 60)
+    ? determineNumberOfMachines(props.rate, props.rootRecipe)
     : 0;
-  const setNumberOfMachines = (number: number) => {
-    const rate = props.rootRecipe
-      ? number *
-        ((props.rootRecipe.product.amount / props.rootRecipe.time) * 60)
-      : 0;
-    props.setRate(rate);
-  };
+  const [machines, setMachines] = useState(numberOfRootMachines);
+  const ratePerMachine = props.rootRecipe
+    ? (props.rootRecipe.product.amount / props.rootRecipe.time) * 60
+    : 0;
+
+  const [lastChanged, setLastChanged] = useState<"rate" | "machines">("rate");
+
+  useEffect(() => {
+    if (lastChanged === "rate") {
+      setMachines(props.rate / ratePerMachine);
+    } else {
+      props.setRate(machines * ratePerMachine);
+    }
+  }, [props.rate, machines, lastChanged]);
+
   return (
     <div className="flex flex-col md:flex-row gap-3 items-center bg-white border rounded-xl shadow-sm p-4">
       {/* Product Select */}
@@ -46,7 +58,10 @@ export const ProductionSetupForm = (props: Props) => {
             step="any"
             min={0}
             value={props.rate}
-            onChange={(e) => props.setRate(Number(e.target.value))}
+            onChange={(e) => {
+              props.setRate(Number(e.target.value));
+              setLastChanged("rate");
+            }}
             className="w-full border-none focus-visible:ring-0 text-sm"
           />
           <span className="text-gray-500 text-xs ml-1">/min</span>
@@ -63,7 +78,10 @@ export const ProductionSetupForm = (props: Props) => {
           step="any"
           min={0}
           value={numberOfRootMachines}
-          onChange={(e) => setNumberOfMachines(+e.target.value)}
+          onChange={(e) => {
+            setMachines(+e.target.value);
+            setLastChanged("machines");
+          }}
           className="text-sm"
           disabled={!props.rootRecipe}
         />

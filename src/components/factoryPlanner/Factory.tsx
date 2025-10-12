@@ -19,14 +19,16 @@ export const Factory = (props: {
   ) => void;
 }) => {
   const ref = useDraggable(props.factory.id, props.onDrop);
-  const hoveredIsOutput = false;
-  //props.factory.productToProduce === props.hoveredAccumulatedProduct;
-  const hoveredIsInput = false; /* props.factory.input.some(
-    (x) => x.product === props.hoveredAccumulatedProduct
-  ); */
+
   const productNodes = props.factory.productNodes;
   const root = productNodes.find((node) => node.type === "ROOT")!;
-
+  const leaves = productNodes.filter(
+    (n) => n.children.length === 0 && !n.subRootPointer
+  );
+  const hoveredIsOutput = root.name === props.hoveredAccumulatedProduct;
+  const hoveredIsInput = leaves.some(
+    (x) => x.name === props.hoveredAccumulatedProduct
+  );
   return (
     <div
       ref={ref}

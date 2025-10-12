@@ -13,9 +13,15 @@ export const accumulateRates = (savedFactories: Cluster[]): RateBalance[][] => {
       accumulatedRates.set(product, (existing ?? 0) + rate);
     };
     for (const factory of cluster.factories) {
-      accumulate(factory.productToProduce, factory.wantedOutputRate);
-      for (const input of factory.input) {
-        accumulate(input.product, -input.rate);
+      const nodes = factory.productNodes;
+      const leaves = nodes.filter(
+        (n) => n.children.length === 0 && !n.subRootPointer
+      );
+      const root = nodes.find((node) => node.type === "ROOT")!;
+
+      accumulate(root.name, root.rate);
+      for (const input of leaves) {
+        accumulate(input.name, -input.rate);
       }
     }
     const sortedRates = [...accumulatedRates.entries()].sort(

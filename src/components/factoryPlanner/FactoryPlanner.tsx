@@ -18,7 +18,7 @@ export const FactoryPlanner = (props: {
   const combinedSavedFactories = props.savedFactories
     .map((x) => x.factories)
     .flat();
-  //const rateBalance = accumulateRates(props.savedFactories);
+  const rateBalance = accumulateRates(props.savedFactories);
   return (
     <CustomCard>
       <Form.Item label="Show resources" style={{ margin: 0 }}>
@@ -37,7 +37,7 @@ export const FactoryPlanner = (props: {
               )
             )
           }
-          //rateBalance={rateBalance[index]}
+          rateBalance={rateBalance[index]}
           setHoveredFactoryId={setHoveredFactoryId}
           selectedFactoryId={props.clickedFactoryId}
           onChooseFactory={props.setClickedFactoryId}

@@ -6,7 +6,7 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 import { Factory } from "./Factory";
 import { RateBalance } from "./accumulateRates";
 import { Pencil, Save, X } from "lucide-react";
-import { Cluster, ProductNode, SavedFactory } from "@/interfaces";
+import { Cluster, SavedFactory } from "@/interfaces";
 
 const useDropable = (
   cluster: SavedFactory[],
@@ -30,7 +30,7 @@ const useDropable = (
 export const FactoryCluster = (props: {
   cluster: Cluster;
   selectedFactoryId?: string | null;
-  //rateBalance: RateBalance[];
+  rateBalance: RateBalance[];
   showResources: boolean;
   hoveredFactoryId?: string | null;
   updateCluster: (cluster: Cluster) => void;
@@ -149,14 +149,14 @@ export const FactoryCluster = (props: {
           </div>
         </div>
       </div>
-      {/* <AccumulatedRates
+      <AccumulatedRates
         showResources={props.showResources}
         rateBalance={props.rateBalance}
         cluster={props.cluster.factories}
         selectedFactory={selectedFactory}
         hoveredFactory={hoveredFactory}
         setHoveredAccumulatedProduct={setHoveredAccumulatedProduct}
-      /> */}
+      />
     </Card>
   );
 };

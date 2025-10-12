@@ -40,6 +40,7 @@ export const RecipeSelected = (props: {
   selectedRecipe: string;
   availableRecipes: Recipe[];
   nodeType: NodeType;
+  rate: number;
   onClear: () => void;
   onDetachSubtree: () => void;
 }) => {
@@ -47,9 +48,12 @@ export const RecipeSelected = (props: {
     (r) => r.recipeName === props.selectedRecipe
   )!;
   const producedIn = productDisplayNameMapping.get(currentRecipe.producedIn);
+  const machineCount =
+    props.rate / ((currentRecipe.product.amount / currentRecipe.time) * 60);
   return (
     <div className="flex flex-col items-center">
       <div className="w-full h-0.5 mb-1 bg-gray-400" />
+      <div className="text-xs pt-1">{machineCount.toFixed(1)}</div>
       <Tooltip
         tooltip={
           <div>

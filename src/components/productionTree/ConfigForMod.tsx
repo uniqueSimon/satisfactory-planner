@@ -33,7 +33,12 @@ export const ConfigForMod = (props: { nodes: ProductNode[] }) => {
       rounded_up === machineCount
         ? undefined
         : Math.round(((machineCount * 100) / rounded_up) * 10000) / 10000;
-    factoryRows.push({ machineCount, producedIn, recipeName, underclock });
+    factoryRows.push({
+      machineCount: rounded_up,
+      producedIn,
+      recipeName,
+      underclock,
+    });
 
     for (const child of node.children) {
       const childNode = props.nodes.find((n) => n.id === child)!;

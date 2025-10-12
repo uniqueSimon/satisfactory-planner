@@ -27,6 +27,7 @@ export const ProductNode = (props: {
       <IconWithTooltip item={name} />
       {buildRecipe ? (
         <RecipeSelected
+          rate={props.node.rate}
           nodeType={props.node.type}
           selectedRecipe={buildRecipe}
           availableRecipes={recipes}
