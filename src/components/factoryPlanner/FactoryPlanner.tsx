@@ -1,4 +1,4 @@
-import { Form, Switch } from "antd";
+import { Form, Switch, Typography } from "antd";
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { useState } from "react";
 import { FactoryCluster } from "./FactoryCluster";
@@ -20,64 +20,67 @@ export const FactoryPlanner = (props: {
     .flat();
   const rateBalance = accumulateRates(props.savedFactories);
   return (
-    <CustomCard>
-      <Form.Item label="Show resources" style={{ margin: 0 }}>
-        <Switch checked={showResources} onChange={setShowResources} />
-      </Form.Item>
-      {props.savedFactories.map((cluster, index) => (
-        <FactoryCluster
-          key={index}
-          cluster={cluster}
-          hoveredFactoryId={hoveredFactoryId}
-          showResources={showResources}
-          updateCluster={(cluster) =>
-            props.setSavedFactories(
-              props.savedFactories.map((prevCluster, i) =>
-                i === index ? cluster : prevCluster
+    <div className="p-4 flex-1 overflow-auto pointer-events-auto">
+      <Typography.Title>Satisfactory Planner</Typography.Title>
+      <CustomCard>
+        <Form.Item label="Show resources" style={{ margin: 0 }}>
+          <Switch checked={showResources} onChange={setShowResources} />
+        </Form.Item>
+        {props.savedFactories.map((cluster, index) => (
+          <FactoryCluster
+            key={index}
+            cluster={cluster}
+            hoveredFactoryId={hoveredFactoryId}
+            showResources={showResources}
+            updateCluster={(cluster) =>
+              props.setSavedFactories(
+                props.savedFactories.map((prevCluster, i) =>
+                  i === index ? cluster : prevCluster
+                )
               )
-            )
-          }
-          rateBalance={rateBalance[index]}
-          setHoveredFactoryId={setHoveredFactoryId}
-          selectedFactoryId={props.clickedFactoryId}
-          onChooseFactory={props.setClickedFactoryId}
-          onDropIntoCluster={(sourceId) => {
-            const sourceFactory = combinedSavedFactories.find(
-              (x) => x.id === sourceId
-            )!;
-            const withoutSource = props.savedFactories.map((cluster) => ({
-              ...cluster,
-              factories: cluster.factories.filter((x) => x.id !== sourceId),
-            }));
-            props.setSavedFactories(
-              withoutSource.map((cluster, i) =>
-                index === i
-                  ? {
-                      ...cluster,
-                      factories: [...cluster.factories, sourceFactory],
-                    }
-                  : cluster
+            }
+            rateBalance={rateBalance[index]}
+            setHoveredFactoryId={setHoveredFactoryId}
+            selectedFactoryId={props.clickedFactoryId}
+            onChooseFactory={props.setClickedFactoryId}
+            onDropIntoCluster={(sourceId) => {
+              const sourceFactory = combinedSavedFactories.find(
+                (x) => x.id === sourceId
+              )!;
+              const withoutSource = props.savedFactories.map((cluster) => ({
+                ...cluster,
+                factories: cluster.factories.filter((x) => x.id !== sourceId),
+              }));
+              props.setSavedFactories(
+                withoutSource.map((cluster, i) =>
+                  index === i
+                    ? {
+                        ...cluster,
+                        factories: [...cluster.factories, sourceFactory],
+                      }
+                    : cluster
+                )
+              );
+            }}
+            onRemoveCluster={() =>
+              props.setSavedFactories(
+                props.savedFactories.filter((_, i) => i !== index)
               )
-            );
-          }}
-          onRemoveCluster={() =>
-            props.setSavedFactories(
-              props.savedFactories.filter((_, i) => i !== index)
-            )
+            }
+          />
+        ))}
+        <Button
+          onClick={() =>
+            props.setSavedFactories([
+              ...props.savedFactories,
+              { title: "New Cluster", factories: [] },
+            ])
           }
-        />
-      ))}
-      <Button
-        onClick={() =>
-          props.setSavedFactories([
-            ...props.savedFactories,
-            { title: "New Cluster", factories: [] },
-          ])
-        }
-      >
-        <SquarePlus />
-        Add factory cluster
-      </Button>
-    </CustomCard>
+        >
+          <SquarePlus />
+          Add factory cluster
+        </Button>
+      </CustomCard>
+    </div>
   );
 };
