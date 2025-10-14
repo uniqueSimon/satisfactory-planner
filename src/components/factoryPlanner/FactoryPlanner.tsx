@@ -5,13 +5,13 @@ import { FactoryCluster } from "./FactoryCluster";
 import { accumulateRates } from "./accumulateRates";
 import { SquarePlus } from "lucide-react";
 import { Button } from "@/reusableComp/Button";
-import { Cluster } from "@/interfaces";
+import { Cluster, SavedFactory } from "@/interfaces";
 
 export const FactoryPlanner = (props: {
   savedFactories: Cluster[];
   setSavedFactories: (newValue: Cluster[]) => void;
-  clickedFactoryId: string | null;
-  setClickedFactoryId: (factoryId: string | null) => void;
+  loadedFactory: SavedFactory | null;
+  setLoadedFactory: (factory: SavedFactory | null) => void;
 }) => {
   const [hoveredFactoryId, setHoveredFactoryId] = useState<string | null>();
   const [showResources, setShowResources] = useState(false);
@@ -40,9 +40,9 @@ export const FactoryPlanner = (props: {
               )
             }
             rateBalance={rateBalance[index]}
+            setLoadedFactory={props.setLoadedFactory}
             setHoveredFactoryId={setHoveredFactoryId}
-            selectedFactoryId={props.clickedFactoryId}
-            onChooseFactory={props.setClickedFactoryId}
+            loadedFactory={props.loadedFactory}
             onDropIntoCluster={(sourceId) => {
               const sourceFactory = combinedSavedFactories.find(
                 (x) => x.id === sourceId

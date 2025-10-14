@@ -36,7 +36,7 @@ export const AccumulatedRates = (props: {
   cluster: SavedFactory[];
   rateBalance: RateBalance[];
   showResources: boolean;
-  selectedFactory?: SavedFactory;
+  selectedFactory: SavedFactory | null;
   hoveredFactory?: SavedFactory;
   setHoveredAccumulatedProduct: (product: string | null) => void;
 }) => {

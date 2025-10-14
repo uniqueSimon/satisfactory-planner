@@ -10,7 +10,7 @@ export const Factory = (props: {
   selected: boolean;
   isHovered: boolean;
   hoveredAccumulatedProduct: string | null;
-  onSelect: (id: string) => void;
+  setLoadedFactory: (factory: SavedFactory) => void;
   setHoveredFactoryId: (id: string | null) => void;
   onDrop: (
     sourceId: string,
@@ -30,35 +30,37 @@ export const Factory = (props: {
     (x) => x.name === props.hoveredAccumulatedProduct
   );
   return (
-    <div
-      ref={ref}
-      className={twMerge(
-        "border-2",
-        hoveredIsOutput
-          ? "border-dashed"
-          : hoveredIsInput
-          ? "border-dotted"
-          : "border-solid",
-        props.selected || hoveredIsOutput || hoveredIsInput
-          ? ""
-          : "border-white"
-      )}
-    >
-      <Button
-        onMouseEnter={() => props.setHoveredFactoryId(props.factory.id)}
-        onMouseLeave={() => props.setHoveredFactoryId(null)}
-        onClick={() => props.onSelect(props.factory.id)}
+    <>
+      <div
+        ref={ref}
+        className={twMerge(
+          "border-2",
+          hoveredIsOutput
+            ? "border-dashed"
+            : hoveredIsInput
+            ? "border-dotted"
+            : "border-solid",
+          props.selected || hoveredIsOutput || hoveredIsInput
+            ? ""
+            : "border-white"
+        )}
       >
-        <div className="flex items-center">
-          {Math.round(root?.rate * 100) / 100}/min
-          <IconWithTooltip item={root.name} />
-        </div>
-      </Button>
+        <Button
+          onMouseEnter={() => props.setHoveredFactoryId(props.factory.id)}
+          onMouseLeave={() => props.setHoveredFactoryId(null)}
+          onClick={() => props.setLoadedFactory(props.factory)}
+        >
+          <div className="flex items-center">
+            {Math.round(root?.rate * 100) / 100}/min
+            <IconWithTooltip item={root.name} />
+          </div>
+        </Button>
+      </div>
       {props.isHovered && (
-        <div className="absolute bottom-4 right-4 z-100 bg-gray-200 rounded border-2">
+        <div className="fixed bottom-4 right-4 z-100 bg-gray-200 rounded border-2">
           <DetailedView savedSetting={props.factory} />
         </div>
       )}
-    </div>
+    </>
   );
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Cluster } from "./interfaces";
+import { Cluster, SavedFactory } from "./interfaces";
 import { FactoryPlanner } from "./components/factoryPlanner/FactoryPlanner";
 import { Drawer } from "./Drawer";
 import { twMerge } from "tailwind-merge";
@@ -8,7 +8,7 @@ export const Home = (props: {
   savedFactories: Cluster[];
   setSavedFactories: (newValue: Cluster[]) => void;
 }) => {
-  const [clickedFactoryId, setClickedFactoryId] = useState<string | null>(null);
+  const [loadedFactory, setLoadedFactory] = useState<SavedFactory | null>(null);
 
   const [drawerWidth, setDrawerWidth] = useState(400);
   const [isDragging, setIsDragging] = useState(false);
@@ -37,15 +37,15 @@ export const Home = (props: {
       {/* Main content */}
       <div className="flex-1 transition-all duration-300">
         <FactoryPlanner
-          clickedFactoryId={clickedFactoryId}
+          loadedFactory={loadedFactory}
+          setLoadedFactory={setLoadedFactory}
           savedFactories={props.savedFactories}
-          setClickedFactoryId={setClickedFactoryId}
           setSavedFactories={props.setSavedFactories}
         />
       </div>
 
       {/* Drawer */}
-      {clickedFactoryId && (
+      {loadedFactory && (
         <>
           <div
             className="w-2 cursor-col-resize bg-gray-400"
@@ -59,8 +59,8 @@ export const Home = (props: {
             style={{ width: drawerWidth }}
           >
             <Drawer
-              clickedFactoryId={clickedFactoryId}
-              setClickedFactoryId={setClickedFactoryId}
+              loadedFactory={loadedFactory}
+              setLoadedFactory={setLoadedFactory}
               savedFactories={props.savedFactories}
               setSavedFactories={props.setSavedFactories}
             />

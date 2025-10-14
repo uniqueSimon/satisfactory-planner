@@ -12,27 +12,27 @@ interface Props {
   setRate: (rate: number) => void;
 }
 
-const determineNumberOfMachines = (rate: number, recipe: Recipe) =>
-  rate / ((recipe.product.amount / recipe.time) * 60);
-
 export const ProductionSetupForm = (props: Props) => {
-  const numberOfRootMachines = props.rootRecipe
-    ? determineNumberOfMachines(props.rate, props.rootRecipe)
-    : 0;
-  const [machines, setMachines] = useState(numberOfRootMachines);
   const ratePerMachine = props.rootRecipe
     ? (props.rootRecipe.product.amount / props.rootRecipe.time) * 60
-    : 0;
+    : null;
+  const [machines, setMachines] = useState(
+    ratePerMachine ? props.rate / ratePerMachine : 0
+  );
 
-  const [lastChanged, setLastChanged] = useState<"rate" | "machines">("rate");
+  const onChangeMachineCount = (count: number) => {
+    if (ratePerMachine) {
+      props.setRate(count * ratePerMachine);
+    }
+  };
 
   useEffect(() => {
-    if (lastChanged === "rate") {
+    if (ratePerMachine) {
       setMachines(props.rate / ratePerMachine);
     } else {
-      props.setRate(machines * ratePerMachine);
+      setMachines(0);
     }
-  }, [props.rate, machines, lastChanged]);
+  }, [props.rate, ratePerMachine]);
 
   return (
     <div className="flex flex-col md:flex-row gap-3 items-center bg-white border rounded-xl shadow-sm p-4">
@@ -58,11 +58,9 @@ export const ProductionSetupForm = (props: Props) => {
             step="any"
             min={0}
             value={props.rate}
-            onChange={(e) => {
-              props.setRate(Number(e.target.value));
-              setLastChanged("rate");
-            }}
+            onChange={(e) => props.setRate(+e.target.value)}
             className="w-full border-none focus-visible:ring-0 text-sm"
+            disabled={!props.rootRecipe}
           />
           <span className="text-gray-500 text-xs ml-1">/min</span>
         </div>
@@ -77,11 +75,8 @@ export const ProductionSetupForm = (props: Props) => {
           type="number"
           step="any"
           min={0}
-          value={numberOfRootMachines}
-          onChange={(e) => {
-            setMachines(+e.target.value);
-            setLastChanged("machines");
-          }}
+          value={machines}
+          onChange={(e) => onChangeMachineCount(+e.target.value)}
           className="text-sm"
           disabled={!props.rootRecipe}
         />
