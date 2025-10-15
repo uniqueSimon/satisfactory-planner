@@ -6,8 +6,11 @@ export interface RateBalance {
   rate: number;
 }
 export const accumulateRates = (savedFactories: Cluster[]): RateBalance[][] => {
-  const ratesPerCluster = savedFactories.map((cluster) => {
+  const ratesPerCluster: { product: string; rate: number }[][] = [];
+
+  for (const cluster of savedFactories) {
     const accumulatedRates = new Map<string, number>();
+
     const accumulate = (product: string, rate: number) => {
       const existing = accumulatedRates.get(product);
       accumulatedRates.set(product, (existing ?? 0) + rate);
@@ -27,10 +30,16 @@ export const accumulateRates = (savedFactories: Cluster[]): RateBalance[][] => {
     const sortedRates = [...accumulatedRates.entries()].sort(
       (a, b) => a[1] - b[1]
     );
-    return sortedRates.map((x) => ({ product: x[0], rate: x[1] }));
-  });
-  return ratesPerCluster.map((cluster, i) =>
-    cluster.map((productRate) => {
+    const ret = sortedRates.map((x) => ({ product: x[0], rate: x[1] }));
+    ratesPerCluster.push(ret);
+  }
+
+  const rateBalance: RateBalance[][] = [];
+
+  ratesPerCluster.forEach((cluster, i) => {
+    const rateBalancePerCluster: RateBalance[] = [];
+
+    for (const productRate of cluster) {
       const rateFromOtherClusters = ratesPerCluster
         .filter((_, j) => j !== i)
         .reduce((acc, cluster) => {
@@ -39,7 +48,11 @@ export const accumulateRates = (savedFactories: Cluster[]): RateBalance[][] => {
           );
           return otherFactory ? acc + otherFactory.rate : acc;
         }, 0);
-      return { ...productRate, rateFromOtherClusters };
-    })
-  );
+      rateBalancePerCluster.push({ ...productRate, rateFromOtherClusters });
+    }
+
+    rateBalance.push(rateBalancePerCluster);
+  });
+
+  return rateBalance;
 };

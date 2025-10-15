@@ -6,14 +6,16 @@ import { SavedFactory } from "@/interfaces";
 
 const getRelevantProducts = (
   selectedFactory: SavedFactory,
-  cluster: SavedFactory[]
-) => {
+  _cluster: SavedFactory[]
+): string[] => {
   const nodes = selectedFactory.productNodes;
   const leaves = nodes.filter(
     (n) => n.children.length === 0 && !n.subRootPointer
   );
-  const root = nodes.find((node) => node.type === "ROOT")!;
+  const leaveProducts = leaves.map((l) => l.name);
 
+  const root = nodes.find((node) => node.type === "ROOT")!;
+  /* 
   const otherCluster = cluster.find((factory) => {
     const leavesOther = factory.productNodes.filter(
       (n) => n.children.length === 0 && !n.subRootPointer
@@ -23,13 +25,8 @@ const getRelevantProducts = (
   const rootOther = otherCluster
     ? otherCluster.productNodes.find((node) => node.type === "ROOT")!
     : undefined;
-
-  return [
-    leaves.map((l) => l.name),
-    root.name,
-    otherCluster,
-    ...[rootOther ?? []],
-  ];
+ */
+  return [...leaveProducts, root.name];
 };
 
 export const AccumulatedRates = (props: {
@@ -108,7 +105,7 @@ export const AccumulatedRates = (props: {
                     >
                       <Tooltip
                         title={
-                          isResource || !notEnough
+                          isResource
                             ? ""
                             : `${
                                 productRate.rate < 0 ? "Produced" : "Needed"

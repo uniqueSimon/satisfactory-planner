@@ -34,7 +34,7 @@ export const Factory = (props: {
       <div
         ref={ref}
         className={twMerge(
-          "border-2",
+          "border-black border-2",
           hoveredIsOutput
             ? "border-dashed"
             : hoveredIsInput
