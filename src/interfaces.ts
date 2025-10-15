@@ -1,4 +1,5 @@
 export interface Cluster {
+  id: string;
   title: string;
   factories: SavedFactory[];
 }

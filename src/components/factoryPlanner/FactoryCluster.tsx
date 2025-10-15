@@ -38,6 +38,7 @@ export const FactoryCluster = (props: {
   onRemoveCluster: () => void;
   loadedFactory: SavedFactory | null;
   setLoadedFactory: (factory: SavedFactory | null) => void;
+  setNewInCluster: (clusterId: string) => void;
 }) => {
   const [hoveredAccumulatedProduct, setHoveredAccumulatedProduct] = useState<
     string | null
@@ -81,6 +82,23 @@ export const FactoryCluster = (props: {
       ],
     });
   };
+  const onAddFactory = () => {
+    const id = uuidv4();
+    const initialFactory: SavedFactory = {
+      id,
+      productNodes: [
+        {
+          id,
+          children: [],
+          name: "",
+          rate: 0,
+          type: "ROOT",
+        },
+      ],
+    };
+    props.setLoadedFactory(initialFactory);
+    props.setNewInCluster(props.cluster.id);
+  };
   return (
     <Card
       title={
@@ -117,26 +135,7 @@ export const FactoryCluster = (props: {
             />
           ))}
           <div style={{ border: "solid", borderColor: "white" }}>
-            <Button
-              onClick={() => {
-                const id = uuidv4();
-                const initialFactory: SavedFactory = {
-                  id,
-                  productNodes: [
-                    {
-                      id,
-                      children: [],
-                      name: "",
-                      rate: 0,
-                      type: "ROOT",
-                    },
-                  ],
-                };
-                props.setLoadedFactory(initialFactory);
-              }}
-            >
-              + new
-            </Button>
+            <Button onClick={onAddFactory}>+ new</Button>
           </div>
         </div>
       </div>

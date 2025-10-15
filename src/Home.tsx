@@ -10,6 +10,9 @@ export const Home = (props: {
 }) => {
   const [loadedFactory, setLoadedFactory] = useState<SavedFactory | null>(null);
 
+  //stores in which cluster the new Factory will be created
+  const [newInCluster, setNewInCluster] = useState<string | null>(null);
+
   const [drawerWidth, setDrawerWidth] = useState(400);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -33,27 +36,30 @@ export const Home = (props: {
   }, [isDragging]);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-screen overflow-hidden">
       {/* Main content */}
-      <div className="flex-1 transition-all duration-300">
+      <div className="flex-1 overflow-auto transition-all duration-300">
         <FactoryPlanner
           loadedFactory={loadedFactory}
           setLoadedFactory={setLoadedFactory}
           savedFactories={props.savedFactories}
           setSavedFactories={props.setSavedFactories}
+          setNewInCluster={setNewInCluster}
         />
       </div>
 
       {/* Drawer */}
       {loadedFactory && (
         <>
+          {/* Resize handle */}
           <div
             className="w-2 cursor-col-resize bg-gray-400"
             onMouseDown={() => setIsDragging(true)}
           />
+
           <div
             className={twMerge(
-              "bg-gray-200",
+              "bg-gray-200 h-full overflow-auto",
               !isDragging && "transition-all duration-300 ease-in-out"
             )}
             style={{ width: drawerWidth }}
@@ -63,6 +69,7 @@ export const Home = (props: {
               setLoadedFactory={setLoadedFactory}
               savedFactories={props.savedFactories}
               setSavedFactories={props.setSavedFactories}
+              newInCluster={newInCluster}
             />
           </div>
         </>

@@ -11,6 +11,7 @@ export const Drawer = (props: {
   setSavedFactories: (newValue: Cluster[]) => void;
   loadedFactory: SavedFactory;
   setLoadedFactory: (factory: SavedFactory | null) => void;
+  newInCluster: string | null;
 }) => {
   const nodes = props.loadedFactory.productNodes;
   const root = nodes.find((node) => node.type === "ROOT");
@@ -30,6 +31,7 @@ export const Drawer = (props: {
     props.setSavedFactories([
       ...props.savedFactories,
       {
+        id: uuidv4(),
         title: "Copied",
         factories: [{ ...props.loadedFactory, id: uuidv4() }],
       },
@@ -52,8 +54,8 @@ export const Drawer = (props: {
       );
     } else {
       props.setSavedFactories(
-        props.savedFactories.map((cluster, i) =>
-          i === 0
+        props.savedFactories.map((cluster) =>
+          cluster.id === props.newInCluster
             ? {
                 ...cluster,
                 factories: [...cluster.factories, props.loadedFactory],

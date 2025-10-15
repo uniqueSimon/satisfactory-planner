@@ -71,8 +71,8 @@ export const ProductionTree = (props: {
         />
         <ConfigForMod nodes={nodes} />
         {forest && (
-          <div ref={containerRef} className="relative flex">
-            <div>
+          <div ref={containerRef} className="relative flex flex-wrap">
+            <div className="mb-10">
               <RecursiveTree
                 node={forest.mainTree}
                 onClearRecipe={onClearRecipe}
@@ -82,7 +82,7 @@ export const ProductionTree = (props: {
               />
             </div>
             {forest.subTrees.map((subTree, i) => (
-              <div key={i}>
+              <div key={i} className="mb-10">
                 <RecursiveTree
                   node={subTree}
                   onClearRecipe={onClearRecipe}

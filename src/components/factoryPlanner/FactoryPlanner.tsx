@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { Form, Switch, Typography } from "antd";
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { useState } from "react";
@@ -12,6 +13,7 @@ export const FactoryPlanner = (props: {
   setSavedFactories: (newValue: Cluster[]) => void;
   loadedFactory: SavedFactory | null;
   setLoadedFactory: (factory: SavedFactory | null) => void;
+  setNewInCluster: (clusterId: string) => void;
 }) => {
   const [hoveredFactoryId, setHoveredFactoryId] = useState<string | null>();
   const [showResources, setShowResources] = useState(false);
@@ -29,6 +31,7 @@ export const FactoryPlanner = (props: {
         {props.savedFactories.map((cluster, index) => (
           <FactoryCluster
             key={index}
+            setNewInCluster={props.setNewInCluster}
             cluster={cluster}
             hoveredFactoryId={hoveredFactoryId}
             showResources={showResources}
@@ -73,7 +76,7 @@ export const FactoryPlanner = (props: {
           onClick={() =>
             props.setSavedFactories([
               ...props.savedFactories,
-              { title: "New Cluster", factories: [] },
+              { id: uuidv4(), title: "New Cluster", factories: [] },
             ])
           }
         >
