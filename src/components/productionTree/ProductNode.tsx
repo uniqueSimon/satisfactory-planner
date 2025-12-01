@@ -1,4 +1,4 @@
-import { ProductNodeNested } from "@/interfaces";
+import { ProductNodeNested, Weights } from "@/interfaces";
 import { RecipeSelected, RecipeToAdd } from "./RecipeSelector";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { cn } from "@/lib/utils";
@@ -6,6 +6,7 @@ import { useRecipes } from "@/RecipesContext";
 
 export const ProductNode = (props: {
   node: ProductNodeNested;
+  weights: Weights;
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
@@ -14,6 +15,18 @@ export const ProductNode = (props: {
   const { id, name, buildRecipe, rate, type, subRootPointer } = props.node;
   const recipes = availableRecipes.filter((x) => x.product.name === name);
   const label = `${rate.toFixed(1)} /min`;
+
+  const productWeights = props.weights.get(name);
+  const minWeight = productWeights
+    ? Math.min(...productWeights.map((x) => x.weight))
+    : Infinity;
+  const productWeight = props.weights.get(name)!;
+
+  const recipesWithWeights = recipes.map((recipe) => ({
+    recipe,
+    weight: productWeight.find((x) => x.recipeName === recipe.recipeName)!
+      .weight,
+  }));
   return (
     <div
       className={cn(
@@ -24,19 +37,23 @@ export const ProductNode = (props: {
       {(type === "SUB_ROOT" || type === "ROOT") && (
         <div className="text-xs pt-1">{label}</div>
       )}
+      {Math.round(minWeight * rate * 100) / 100}
+
       <IconWithTooltip item={name} />
       {buildRecipe ? (
         <RecipeSelected
+          recipes={recipesWithWeights}
           rate={props.node.rate}
           nodeType={props.node.type}
           selectedRecipe={buildRecipe}
-          availableRecipes={recipes}
           onClear={() => props.onClearRecipe(id)}
           onDetachSubtree={() => props.onDetachSubtree(id)}
+          onSelectNew={(recipe) => props.onSelectRecipe(id, recipe)}
         />
       ) : subRootPointer || recipes.length === 0 ? null : (
         <RecipeToAdd
-          availableRecipes={recipes}
+          rate={props.node.rate}
+          recipes={recipesWithWeights}
           onSelect={(recipe) => props.onSelectRecipe(id, recipe)}
         />
       )}

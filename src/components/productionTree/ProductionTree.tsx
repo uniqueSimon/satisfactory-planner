@@ -10,6 +10,9 @@ import { moveToSubtree } from "./treeOperations/moveToSubtree";
 import { useRecipes } from "@/RecipesContext";
 import { ConfigForMod } from "./ConfigForMod";
 import { updateTreeRates } from "./treeOperations/updateTreeRates";
+import { calculateProductWeights, maxRates } from "@/calculateProductWeights";
+import { useLocalStorage } from "@/reusableComp/useLocalStorage";
+import { ExcludedResourcesSelect } from "./ExcludedResourcesSelect";
 
 export const ProductionTree = (props: {
   savedFactory: SavedFactory;
@@ -59,6 +62,13 @@ export const ProductionTree = (props: {
     props.setProductNodes(updated);
   };
 
+  const allResources = [...maxRates.keys()];
+  const [excludedResources, setExcludedResources] = useLocalStorage<string[]>(
+    "excluded-resources",
+    []
+  );
+  const weights = calculateProductWeights(excludedResources);
+
   return (
     <div className="flex-1 overflow-y-auto overflow-x-hidden">
       <div className="w-full bg-gray-50">
@@ -69,6 +79,14 @@ export const ProductionTree = (props: {
           setProduct={setProductToProduce}
           setRate={setOutputRate}
         />
+        <div className="mt-4">
+          <p className="text-xs font-medium mb-1">Resources to exclude from weighting points</p>
+          <ExcludedResourcesSelect
+            resources={allResources}
+            value={excludedResources}
+            onChange={setExcludedResources}
+          />
+        </div>
         <ConfigForMod nodes={nodes} />
         {forest && (
           <div ref={containerRef} className="relative flex flex-wrap">
@@ -79,6 +97,7 @@ export const ProductionTree = (props: {
                 onSelectRecipe={onSelectRecipe}
                 onDetachSubtree={onDetachSubtree}
                 container={containerRef.current}
+                weights={weights}
               />
             </div>
             {forest.subTrees.map((subTree, i) => (
@@ -89,6 +108,7 @@ export const ProductionTree = (props: {
                   onSelectRecipe={onSelectRecipe}
                   onDetachSubtree={onDetachSubtree}
                   container={containerRef.current}
+                  weights={weights}
                 />
               </div>
             ))}

@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductNodeNested, Recipe } from "@/interfaces";
+import { ProductNodeNested, Weights } from "@/interfaces";
 import { ProductNode } from "./ProductNode";
 import { LineBetween } from "./LineBetween";
 import { useUpdatingRef } from "@/reusableComp/useUpdatingRef";
@@ -7,6 +7,7 @@ import { useUpdatingRef } from "@/reusableComp/useUpdatingRef";
 export const RecursiveTree = (props: {
   ref?: React.RefObject<HTMLDivElement | null>;
   node: ProductNodeNested;
+  weights: Weights;
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;

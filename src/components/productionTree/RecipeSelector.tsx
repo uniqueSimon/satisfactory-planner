@@ -1,5 +1,5 @@
 import { MoreHorizontal, Plus } from "lucide-react";
-import { NodeType, Recipe } from "../../interfaces";
+import { NodeType, RecipeWithWeight } from "../../interfaces";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -12,7 +12,8 @@ import { Icon } from "@/reusableComp/Icon";
 import { Tooltip } from "@/reusableComp/Tooltip";
 
 export const RecipeToAdd = (props: {
-  availableRecipes: Recipe[];
+  recipes: RecipeWithWeight[];
+  rate: number;
   onSelect: (recipe: string) => void;
 }) => (
   <DropdownMenu>
@@ -23,13 +24,14 @@ export const RecipeToAdd = (props: {
     </DropdownMenuTrigger>
 
     <DropdownMenuContent align="start">
-      {props.availableRecipes.map((recipe) => (
+      {props.recipes.map(({ recipe, weight }) => (
         <DropdownMenuItem
           key={recipe.recipeName}
           onClick={() => props.onSelect(recipe.recipeName)}
         >
           <Icon item={recipe.producedIn} />
-          {recipe.displayName}
+          <div>{recipe.displayName}</div>
+          {Math.round(weight * props.rate * 100) / 100}
         </DropdownMenuItem>
       ))}
     </DropdownMenuContent>
@@ -37,19 +39,20 @@ export const RecipeToAdd = (props: {
 );
 
 export const RecipeSelected = (props: {
+  recipes: RecipeWithWeight[];
   selectedRecipe: string;
-  availableRecipes: Recipe[];
   nodeType: NodeType;
   rate: number;
   onClear: () => void;
   onDetachSubtree: () => void;
+  onSelectNew: (recipe: string) => void;
 }) => {
-  const currentRecipe = props.availableRecipes.find(
-    (r) => r.recipeName === props.selectedRecipe
+  const { recipe } = props.recipes.find(
+    (r) => r.recipe.recipeName === props.selectedRecipe
   )!;
-  const producedIn = productDisplayNameMapping.get(currentRecipe.producedIn);
+  const producedIn = productDisplayNameMapping.get(recipe.producedIn);
   const machineCount =
-    props.rate / ((currentRecipe.product.amount / currentRecipe.time) * 60);
+    props.rate / ((recipe.product.amount / recipe.time) * 60);
   return (
     <div className="flex flex-col items-center">
       <div className="w-full h-0.5 mb-1 bg-gray-400" />
@@ -58,11 +61,11 @@ export const RecipeSelected = (props: {
         tooltip={
           <div>
             <div className="font-bold">{producedIn}</div>
-            {currentRecipe.displayName}
+            {recipe.displayName}
           </div>
         }
       >
-        <Icon item={currentRecipe.producedIn} />
+        <Icon item={recipe.producedIn} />
       </Tooltip>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -83,6 +86,20 @@ export const RecipeSelected = (props: {
               Create / Join to subtree
             </DropdownMenuItem>
           )}
+          {/* Change recipe submenu */}
+          {props.recipes.length > 1 && <div className="border-t my-1" />}
+          {props.recipes
+            .filter((r) => r.recipe.recipeName !== props.selectedRecipe)
+            .map(({ recipe, weight }) => (
+              <DropdownMenuItem
+                key={recipe.recipeName}
+                onClick={() => props.onSelectNew(recipe.recipeName)}
+              >
+                <Icon item={recipe.producedIn} />
+                <div className="ml-2">Change to {recipe.displayName}</div>
+                {Math.round(weight * props.rate * 100) / 100}
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

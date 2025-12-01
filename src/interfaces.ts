@@ -47,6 +47,20 @@ export interface Recipe {
   tier: number;
 }
 
+export type Weights = Map<
+  string,
+  {
+    recipeName: string;
+    weight: number;
+  }[]
+>;
+
+export interface RecipeWithWeight {
+  recipe: Recipe;
+  weight: number;
+}
+[];
+
 export interface TreeResults {
   rate: number;
   machineCount: number;
