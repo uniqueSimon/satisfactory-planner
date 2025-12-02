@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 
 export const Home = (props: {
   savedFactories: Cluster[];
-  setSavedFactories: (newValue: Cluster[]) => void;
+  setSavedFactories: (newValue: React.SetStateAction<Cluster[]>) => void;
 }) => {
   const [loadedFactory, setLoadedFactory] = useState<SavedFactory | null>(null);
 

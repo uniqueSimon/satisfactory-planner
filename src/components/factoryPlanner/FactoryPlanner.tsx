@@ -10,17 +10,35 @@ import { Cluster, SavedFactory } from "@/interfaces";
 
 export const FactoryPlanner = (props: {
   savedFactories: Cluster[];
-  setSavedFactories: (newValue: Cluster[]) => void;
+  setSavedFactories: (newValue: React.SetStateAction<Cluster[]>) => void;
   loadedFactory: SavedFactory | null;
   setLoadedFactory: (factory: SavedFactory | null) => void;
   setNewInCluster: (clusterId: string) => void;
 }) => {
   const [hoveredFactoryId, setHoveredFactoryId] = useState<string | null>();
   const [showResources, setShowResources] = useState(false);
-  const combinedSavedFactories = props.savedFactories
-    .map((x) => x.factories)
-    .flat();
+
   const rateBalance = accumulateRates(props.savedFactories);
+
+  const onDropIntoCluster = (sourceId: string, clusterIndex: number) => {
+    props.setSavedFactories((currentFactories) => {
+      const sourceFactory = currentFactories
+        .flatMap((x) => x.factories)
+        .find((x) => x.id === sourceId)!;
+      const withoutSource = currentFactories.map((cluster) => ({
+        ...cluster,
+        factories: cluster.factories.filter((x) => x.id !== sourceId),
+      }));
+      return withoutSource.map((cluster, i) =>
+        clusterIndex === i
+          ? {
+              ...cluster,
+              factories: [...cluster.factories, sourceFactory],
+            }
+          : cluster
+      );
+    });
+  };
   return (
     <div className="p-4 flex-1 overflow-auto pointer-events-auto">
       <Typography.Title>Satisfactory Planner</Typography.Title>
@@ -36,8 +54,8 @@ export const FactoryPlanner = (props: {
             hoveredFactoryId={hoveredFactoryId}
             showResources={showResources}
             updateCluster={(cluster) =>
-              props.setSavedFactories(
-                props.savedFactories.map((prevCluster, i) =>
+              props.setSavedFactories((prev) =>
+                prev.map((prevCluster, i) =>
                   i === index ? cluster : prevCluster
                 )
               )
@@ -46,36 +64,16 @@ export const FactoryPlanner = (props: {
             setLoadedFactory={props.setLoadedFactory}
             setHoveredFactoryId={setHoveredFactoryId}
             loadedFactory={props.loadedFactory}
-            onDropIntoCluster={(sourceId) => {
-              const sourceFactory = combinedSavedFactories.find(
-                (x) => x.id === sourceId
-              )!;
-              const withoutSource = props.savedFactories.map((cluster) => ({
-                ...cluster,
-                factories: cluster.factories.filter((x) => x.id !== sourceId),
-              }));
-              props.setSavedFactories(
-                withoutSource.map((cluster, i) =>
-                  index === i
-                    ? {
-                        ...cluster,
-                        factories: [...cluster.factories, sourceFactory],
-                      }
-                    : cluster
-                )
-              );
-            }}
+            onDropIntoCluster={(sourceId) => onDropIntoCluster(sourceId, index)}
             onRemoveCluster={() =>
-              props.setSavedFactories(
-                props.savedFactories.filter((_, i) => i !== index)
-              )
+              props.setSavedFactories((prev) => prev.filter((_, i) => i !== index))
             }
           />
         ))}
         <Button
           onClick={() =>
-            props.setSavedFactories([
-              ...props.savedFactories,
+            props.setSavedFactories((prev) => [
+              ...prev,
               { id: uuidv4(), title: "New Cluster", factories: [] },
             ])
           }
