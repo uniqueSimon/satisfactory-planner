@@ -12,7 +12,7 @@ import { ConfigForMod } from "./ConfigForMod";
 import { updateTreeRates } from "./treeOperations/updateTreeRates";
 import { calculateProductWeights, maxRates } from "@/calculateProductWeights";
 import { useLocalStorage } from "@/reusableComp/useLocalStorage";
-import { ExcludedResourcesSelect } from "./ExcludedResourcesSelect";
+import { WeightingPoints } from "./WeightingPoints";
 
 export const ProductionTree = (props: {
   savedFactory: SavedFactory;
@@ -67,6 +67,10 @@ export const ProductionTree = (props: {
     "excluded-resources",
     []
   );
+  const [showWeights, setShowWeights] = useLocalStorage<boolean>(
+    "showWeights",
+    false
+  );
   const weights = calculateProductWeights(excludedResources);
 
   return (
@@ -79,14 +83,13 @@ export const ProductionTree = (props: {
           setProduct={setProductToProduce}
           setRate={setOutputRate}
         />
-        <div className="mt-4">
-          <p className="text-xs font-medium mb-1">Resources to exclude from weighting points</p>
-          <ExcludedResourcesSelect
-            resources={allResources}
-            value={excludedResources}
-            onChange={setExcludedResources}
-          />
-        </div>
+        <WeightingPoints
+          showWeights={showWeights}
+          setShowWeights={setShowWeights}
+          resources={allResources}
+          value={excludedResources}
+          onChange={setExcludedResources}
+        />
         <ConfigForMod nodes={nodes} />
         {forest && (
           <div ref={containerRef} className="relative flex flex-wrap">
@@ -98,6 +101,7 @@ export const ProductionTree = (props: {
                 onDetachSubtree={onDetachSubtree}
                 container={containerRef.current}
                 weights={weights}
+                showWeights={showWeights}
               />
             </div>
             {forest.subTrees.map((subTree, i) => (
@@ -109,6 +113,7 @@ export const ProductionTree = (props: {
                   onDetachSubtree={onDetachSubtree}
                   container={containerRef.current}
                   weights={weights}
+                  showWeights={showWeights}
                 />
               </div>
             ))}

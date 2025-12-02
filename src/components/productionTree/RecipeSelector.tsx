@@ -43,11 +43,12 @@ export const RecipeSelected = (props: {
   selectedRecipe: string;
   nodeType: NodeType;
   rate: number;
+  showWeights: boolean;
   onClear: () => void;
   onDetachSubtree: () => void;
   onSelectNew: (recipe: string) => void;
 }) => {
-  const { recipe } = props.recipes.find(
+  const { recipe, weight } = props.recipes.find(
     (r) => r.recipe.recipeName === props.selectedRecipe
   )!;
   const producedIn = productDisplayNameMapping.get(recipe.producedIn);
@@ -67,6 +68,9 @@ export const RecipeSelected = (props: {
       >
         <Icon item={recipe.producedIn} />
       </Tooltip>
+      {props.showWeights && (
+        <div className="text-xs pt-1">({(weight * props.rate).toFixed(1)})</div>
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -97,7 +101,11 @@ export const RecipeSelected = (props: {
               >
                 <Icon item={recipe.producedIn} />
                 <div className="ml-2">Change to {recipe.displayName}</div>
-                {Math.round(weight * props.rate * 100) / 100}
+                {props.showWeights && (
+                  <div className="text-xs pt-1">
+                    ({(weight * props.rate).toFixed(1)})
+                  </div>
+                )}
               </DropdownMenuItem>
             ))}
         </DropdownMenuContent>

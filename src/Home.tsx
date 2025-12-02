@@ -20,7 +20,9 @@ export const Home = (props: {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         const newWidth = window.innerWidth - e.clientX;
-        setDrawerWidth(Math.max(200, Math.min(newWidth, 800)));
+        if (newWidth > 200 && e.clientX > 280) {
+          setDrawerWidth(newWidth);
+        }
       }
     };
 

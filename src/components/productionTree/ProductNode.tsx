@@ -7,6 +7,7 @@ import { useRecipes } from "@/RecipesContext";
 export const ProductNode = (props: {
   node: ProductNodeNested;
   weights: Weights;
+  showWeights: boolean;
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
@@ -37,8 +38,9 @@ export const ProductNode = (props: {
       {(type === "SUB_ROOT" || type === "ROOT") && (
         <div className="text-xs pt-1">{label}</div>
       )}
-      {Math.round(minWeight * rate * 100) / 100}
-
+      {props.showWeights && (
+        <div className="text-xs pt-1">({(minWeight * rate).toFixed(1)})</div>
+      )}
       <IconWithTooltip item={name} />
       {buildRecipe ? (
         <RecipeSelected
@@ -46,6 +48,7 @@ export const ProductNode = (props: {
           rate={props.node.rate}
           nodeType={props.node.type}
           selectedRecipe={buildRecipe}
+          showWeights={props.showWeights}
           onClear={() => props.onClearRecipe(id)}
           onDetachSubtree={() => props.onDetachSubtree(id)}
           onSelectNew={(recipe) => props.onSelectRecipe(id, recipe)}

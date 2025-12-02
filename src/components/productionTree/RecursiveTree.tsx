@@ -8,6 +8,7 @@ export const RecursiveTree = (props: {
   ref?: React.RefObject<HTMLDivElement | null>;
   node: ProductNodeNested;
   weights: Weights;
+  showWeights: boolean;
   onSelectRecipe: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
@@ -28,7 +29,7 @@ export const RecursiveTree = (props: {
         label={label}
       />
       <div ref={ref}>
-        <ProductNode {...props} />
+        <ProductNode {...props} showWeights={props.showWeights} />
       </div>
 
       {hasChildren && (
