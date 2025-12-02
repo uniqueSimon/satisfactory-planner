@@ -3,11 +3,11 @@ import { allProducts, allRecipes } from "@/App";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { Button as MyButton } from "@/reusableComp/Button";
 import { Recipe } from "@/interfaces";
+import { useRecipes } from "@/RecipesContext";
 
-export const AlternateRecipes = (props: {
-  foundAltRecipes: string[];
-  setFoundAltRecipes: (foundAltRecipes: string[]) => void;
-}) => {
+export const AlternateRecipes = () => {
+  const { foundAltRecipes, setFoundAltRecipes } = useRecipes();
+
   const recipePerProduct = allProducts.map((product) => {
     const recipes = allRecipes.filter((x) => x.product.name === product);
     const baseRecipe = recipes.find((x) => !x.isAlternate);
@@ -21,15 +21,11 @@ export const AlternateRecipes = (props: {
   return (
     <div style={{ border: "solid grey", borderRadius: 8 }}>
       <MyButton
-        onClick={() =>
-          props.setFoundAltRecipes(allRecipes.map((x) => x.recipeName))
-        }
+        onClick={() => setFoundAltRecipes(allRecipes.map((x) => x.recipeName))}
       >
         Select all
       </MyButton>
-      <MyButton onClick={() => props.setFoundAltRecipes([])}>
-        Deselect all
-      </MyButton>
+      <MyButton onClick={() => setFoundAltRecipes([])}>Deselect all</MyButton>
       <Table
         pagination={false}
         size="small"
@@ -65,7 +61,7 @@ export const AlternateRecipes = (props: {
               return (
                 <div style={{ display: "flex" }}>
                   {recipes.map((recipe) => {
-                    const selected = props.foundAltRecipes.includes(
+                    const selected = foundAltRecipes.includes(
                       recipe.recipeName
                     );
                     return (
@@ -79,11 +75,11 @@ export const AlternateRecipes = (props: {
                           borderWidth: 2,
                         }}
                         onClick={() =>
-                          props.setFoundAltRecipes(
+                          setFoundAltRecipes(
                             !selected
-                              ? [...props.foundAltRecipes, recipe.recipeName]
+                              ? [...foundAltRecipes, recipe.recipeName]
                               : [
-                                  ...props.foundAltRecipes.filter(
+                                  ...foundAltRecipes.filter(
                                     (x) => x !== recipe.recipeName
                                   ),
                                 ]

@@ -1,15 +1,39 @@
 export interface Cluster {
+  id: string;
   title: string;
   factories: SavedFactory[];
 }
 
 export interface SavedFactory {
-  id: number;
-  productToProduce: string;
-  wantedOutputRate: number;
-  selectedRecipes: string[];
-  dedicatedProducts: string[];
-  input: { product: string; rate: number }[];
+  id: string;
+  productNodes: ProductNode[];
+}
+/**
+  Just need ROOT and SUB_ROOT.
+  - LEAF has no children.
+  - SUB_ROOT_Pointer has a pointer
+*/
+export type NodeType = "ROOT" | "SUB_ROOT" | "NORMAL";
+
+interface ProductNodeCommon {
+  id: string;
+  name: string;
+  rate: number;
+  type: NodeType;
+  buildRecipe?: string;
+  subRootPointer?: string;
+}
+export interface ProductNode extends ProductNodeCommon {
+  children: string[];
+}
+
+export interface ProductForest {
+  mainTree: ProductNodeNested;
+  subTrees: ProductNodeNested[];
+}
+
+export interface ProductNodeNested extends ProductNodeCommon {
+  children: ProductNodeNested[];
 }
 
 export interface Recipe {
@@ -22,6 +46,20 @@ export interface Recipe {
   producedIn: string;
   tier: number;
 }
+
+export type Weights = Map<
+  string,
+  {
+    recipeName: string;
+    weight: number;
+  }[]
+>;
+
+export interface RecipeWithWeight {
+  recipe: Recipe;
+  weight: number;
+}
+[];
 
 export interface TreeResults {
   rate: number;

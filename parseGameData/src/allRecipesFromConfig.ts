@@ -13,6 +13,19 @@ export interface Recipe {
   tier: number;
 }
 
+const machines = [
+  "SmelterMk1",
+  "ConstructorMk1",
+  "AssemblerMk1",
+  "FoundryMk1",
+  "ManufacturerMk1",
+  "Blender",
+  "OilRefinery",
+  "Converter",
+  "QuantumEncoder",
+  "HadronCollider",
+];
+
 export interface FGRecipe {
   NativeClass: "/Script/CoreUObject.Class'/Script/FactoryGame.FGRecipe'";
   Classes: {
@@ -88,11 +101,10 @@ for (const item of recipeNativeClass!.Classes) {
   const recipeName = item.ClassName.split("_").slice(1, -1).join("_");
   const displayName = item.mDisplayName;
   const fullName = item.FullName;
-  if(fullName==='BlueprintGeneratedClass /Game/FactoryGame/Equipment/Rifle/Ammo/Recipe_CartridgeSmart.Recipe_CartridgeSmart_C'){
-    console.log('found!!')
-  }
   const categoryMatching =
-    /BlueprintGeneratedClass \/Game\/FactoryGame\/(?:Recipes|Equipment)\/(.*)/.exec(fullName);
+    /BlueprintGeneratedClass \/Game\/FactoryGame\/(?:Recipes|Equipment)\/(.*)/.exec(
+      fullName
+    );
   if (
     categoryMatching &&
     !categoryMatching[1].includes("Buildings") &&
@@ -103,6 +115,9 @@ for (const item of recipeNativeClass!.Classes) {
     const time = +item.mManufactoringDuration;
     const producedInString = item.mProducedIn.split("/")[5];
     const producedIn = producedInString;
+    if (!machines.includes(producedIn)) {
+      continue;
+    }
     const splittedProducts = item.mProduct.split("),(");
 
     const products = splittedProducts.map((product) =>

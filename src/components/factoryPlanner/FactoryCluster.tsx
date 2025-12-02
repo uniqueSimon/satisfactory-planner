@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { Button, Card, Input } from "antd";
 import { AccumulatedRates } from "./AccumulatedRates";
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +10,7 @@ import { Cluster, SavedFactory } from "@/interfaces";
 
 const useDropable = (
   cluster: SavedFactory[],
-  onDropIntoCluster: (sourceId: number) => void
+  onDropIntoCluster: (sourceId: string) => void
 ) => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -17,7 +18,7 @@ const useDropable = (
     const cleanupDropTarget = dropTargetForElements({
       element,
       canDrop: ({ source }) => !cluster.some((x) => x.id === source.data.id),
-      onDrop: ({ source }) => onDropIntoCluster(source.data.id as number),
+      onDrop: ({ source }) => onDropIntoCluster(source.data.id as string),
     });
     return () => {
       cleanupDropTarget();
@@ -28,15 +29,16 @@ const useDropable = (
 
 export const FactoryCluster = (props: {
   cluster: Cluster;
-  selectedFactoryId?: number | null;
   rateBalance: RateBalance[];
   showResources: boolean;
-  hoveredFactoryId?: number | null;
+  hoveredFactoryId?: string | null;
   updateCluster: (cluster: Cluster) => void;
-  onChooseFactory: (id: number) => void;
-  setHoveredFactoryId: (id?: number | null) => void;
-  onDropIntoCluster: (sourceId: number) => void;
+  setHoveredFactoryId: (id?: string | null) => void;
+  onDropIntoCluster: (sourceId: string) => void;
   onRemoveCluster: () => void;
+  loadedFactory: SavedFactory | null;
+  setLoadedFactory: (factory: SavedFactory | null) => void;
+  setNewInCluster: (clusterId: string) => void;
 }) => {
   const [hoveredAccumulatedProduct, setHoveredAccumulatedProduct] = useState<
     string | null
@@ -45,15 +47,12 @@ export const FactoryCluster = (props: {
     props.cluster.factories,
     props.onDropIntoCluster
   );
-  const selectedFactory = props.cluster.factories.find(
-    (x) => x.id === props.selectedFactoryId
-  );
   const hoveredFactory = props.cluster.factories.find(
     (x) => x.id === props.hoveredFactoryId
   );
   const onMoveCard = (
-    sourceId: number,
-    targetId: number,
+    sourceId: string,
+    targetId: string,
     closestEdge: "left" | "right"
   ) => {
     const sourceIndex = props.cluster.factories.findIndex(
@@ -83,6 +82,23 @@ export const FactoryCluster = (props: {
       ],
     });
   };
+  const onAddFactory = () => {
+    const id = uuidv4();
+    const initialFactory: SavedFactory = {
+      id,
+      productNodes: [
+        {
+          id,
+          children: [],
+          name: "",
+          rate: 0,
+          type: "ROOT",
+        },
+      ],
+    };
+    props.setLoadedFactory(initialFactory);
+    props.setNewInCluster(props.cluster.id);
+  };
   return (
     <Card
       title={
@@ -111,36 +127,15 @@ export const FactoryCluster = (props: {
               key={factory.id}
               factory={factory}
               hoveredAccumulatedProduct={hoveredAccumulatedProduct}
-              selected={props.selectedFactoryId === factory.id}
+              selected={props.loadedFactory?.id === factory.id}
               isHovered={props.hoveredFactoryId === factory.id}
-              onSelect={props.onChooseFactory}
+              setLoadedFactory={props.setLoadedFactory}
               setHoveredFactoryId={props.setHoveredFactoryId}
               onDrop={onMoveCard}
             />
           ))}
           <div style={{ border: "solid", borderColor: "white" }}>
-            <Button
-              onClick={() => {
-                const now = Date.now();
-                props.updateCluster({
-                  ...props.cluster,
-                  factories: [
-                    ...props.cluster.factories,
-                    {
-                      id: now,
-                      productToProduce: "IronPlate",
-                      wantedOutputRate: 60,
-                      selectedRecipes: [],
-                      dedicatedProducts: [],
-                      input: [],
-                    },
-                  ],
-                });
-                props.onChooseFactory(now);
-              }}
-            >
-              + new
-            </Button>
+            <Button onClick={onAddFactory}>+ new</Button>
           </div>
         </div>
       </div>
@@ -148,7 +143,7 @@ export const FactoryCluster = (props: {
         showResources={props.showResources}
         rateBalance={props.rateBalance}
         cluster={props.cluster.factories}
-        selectedFactory={selectedFactory}
+        selectedFactory={props.loadedFactory}
         hoveredFactory={hoveredFactory}
         setHoveredAccumulatedProduct={setHoveredAccumulatedProduct}
       />

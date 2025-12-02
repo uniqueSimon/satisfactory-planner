@@ -2,21 +2,27 @@ import { SavedFactory } from "@/interfaces";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 
 export const DetailedView = (props: { savedSetting: SavedFactory }) => {
+  const nodes = props.savedSetting.productNodes;
+  const leaves = nodes.filter(
+    (n) => n.children.length === 0 && !n.subRootPointer
+  );
+  const root = nodes.find((node) => node.type === "ROOT")!;
+
   return (
     <div style={{ display: "flex" }}>
       <div>
-        {props.savedSetting.input.map((x) => {
+        {leaves.map((x) => {
           return (
-            <div key={x.product} style={{ display: "flex", margin: 10 }}>
-              <IconWithTooltip item={x.product} />
+            <div key={x.id} style={{ display: "flex", margin: 10 }}>
+              <IconWithTooltip item={x.name} />
               <RateWithArrow rate={x.rate} />
             </div>
           );
         })}
       </div>
       <IconWithRate
-        rate={props.savedSetting.wantedOutputRate}
-        product={props.savedSetting.productToProduce}
+        rate={root.rate}
+        product={root.name}
         insufficientOutput={false}
       />
     </div>

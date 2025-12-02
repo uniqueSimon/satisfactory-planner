@@ -4,11 +4,36 @@ import { RateBalance } from "./accumulateRates";
 import { maxRates } from "@/calculateProductWeights";
 import { SavedFactory } from "@/interfaces";
 
+const getRelevantProducts = (
+  selectedFactory: SavedFactory,
+  _cluster: SavedFactory[]
+): string[] => {
+  const nodes = selectedFactory.productNodes;
+  const leaves = nodes.filter(
+    (n) => n.children.length === 0 && !n.subRootPointer
+  );
+  const leaveProducts = leaves.map((l) => l.name);
+
+  const root = nodes.find((node) => node.type === "ROOT")!;
+  /* 
+  const otherCluster = cluster.find((factory) => {
+    const leavesOther = factory.productNodes.filter(
+      (n) => n.children.length === 0 && !n.subRootPointer
+    );
+    return leavesOther.some((x) => x.name === root.name);
+  });
+  const rootOther = otherCluster
+    ? otherCluster.productNodes.find((node) => node.type === "ROOT")!
+    : undefined;
+ */
+  return [...leaveProducts, root.name];
+};
+
 export const AccumulatedRates = (props: {
   cluster: SavedFactory[];
   rateBalance: RateBalance[];
   showResources: boolean;
-  selectedFactory?: SavedFactory;
+  selectedFactory: SavedFactory | null;
   hoveredFactory?: SavedFactory;
   setHoveredAccumulatedProduct: (product: string | null) => void;
 }) => {
@@ -17,27 +42,13 @@ export const AccumulatedRates = (props: {
     (x) => props.showResources || !allResources.includes(x.product)
   );
   const relevantProducts = props.selectedFactory
-    ? [
-        props.selectedFactory.productToProduce,
-        ...props.selectedFactory.input.map((x) => x.product),
-        props.cluster.find((factory) =>
-          factory.input.some(
-            (x) => x.product === props.selectedFactory!.productToProduce
-          )
-        )?.productToProduce ?? [],
-      ]
+    ? getRelevantProducts(props.selectedFactory, props.cluster)
     : [];
+
   const relevantProductsHovered = props.hoveredFactory
-    ? [
-        props.hoveredFactory.productToProduce,
-        ...props.hoveredFactory.input.map((x) => x.product),
-        props.cluster.find((factory) =>
-          factory.input.some(
-            (x) => x.product === props.hoveredFactory!.productToProduce
-          )
-        )?.productToProduce ?? [],
-      ]
+    ? getRelevantProducts(props.hoveredFactory, props.cluster)
     : [];
+
   return (
     <Collapse
       size="small"
@@ -94,7 +105,7 @@ export const AccumulatedRates = (props: {
                     >
                       <Tooltip
                         title={
-                          isResource || !notEnough
+                          isResource
                             ? ""
                             : `${
                                 productRate.rate < 0 ? "Produced" : "Needed"
