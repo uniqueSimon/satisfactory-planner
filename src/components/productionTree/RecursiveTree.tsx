@@ -10,6 +10,7 @@ export const RecursiveTree = (props: {
   weights: Weights;
   showWeights: boolean;
   onSelectRecipe: (id: string, recipe: string) => void;
+  onSelectNew: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
   container: HTMLElement | null;

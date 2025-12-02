@@ -16,7 +16,9 @@ import { WeightingPoints } from "./WeightingPoints";
 
 export const ProductionTree = (props: {
   savedFactory: SavedFactory;
-  setProductNodes: (nodes: ProductNode[]) => void;
+  setProductNodes: (
+    nodes: ProductNode[] | ((prev: ProductNode[]) => ProductNode[])
+  ) => void;
 }) => {
   const { availableRecipes } = useRecipes();
   const nodes = props.savedFactory.productNodes;
@@ -46,20 +48,28 @@ export const ProductionTree = (props: {
     ]);
   };
   const setOutputRate = (rate: number) => {
-    const updated = updateTreeRates(nodes, rate, root!, availableRecipes);
-    props.setProductNodes(updated);
+    props.setProductNodes((currentNodes) => {
+      const currentRoot = currentNodes.find((node) => node.type === "ROOT")!;
+      return updateTreeRates(currentNodes, rate, currentRoot, availableRecipes);
+    });
   };
-  const onSelectRecipe = (id: string, recipe: string) => {
-    const updated = selectRecipe(nodes, id, recipe, availableRecipes);
-    props.setProductNodes(updated);
-  };
+  const onSelectRecipe = (id: string, recipe: string) =>
+    props.setProductNodes((currentNodes) =>
+      selectRecipe(currentNodes, id, recipe, availableRecipes)
+    );
+  const onSelectNew = (id: string, recipe: string) =>
+    props.setProductNodes((currentNodes) => {
+      const cleared = clearRecipe(currentNodes, id);
+      const withNewRecipe = selectRecipe(cleared, id, recipe, availableRecipes);
+      return withNewRecipe;
+    });
   const onClearRecipe = (id: string) => {
-    const updated = clearRecipe(nodes, id);
-    props.setProductNodes(updated);
+    props.setProductNodes((currentNodes) => clearRecipe(currentNodes, id));
   };
   const onDetachSubtree = (id: string) => {
-    const updated = moveToSubtree(nodes, id, availableRecipes);
-    props.setProductNodes(updated);
+    props.setProductNodes((currentNodes) =>
+      moveToSubtree(currentNodes, id, availableRecipes)
+    );
   };
 
   const allResources = [...maxRates.keys()];
@@ -98,6 +108,7 @@ export const ProductionTree = (props: {
                 node={forest.mainTree}
                 onClearRecipe={onClearRecipe}
                 onSelectRecipe={onSelectRecipe}
+                onSelectNew={onSelectNew}
                 onDetachSubtree={onDetachSubtree}
                 container={containerRef.current}
                 weights={weights}
@@ -110,6 +121,7 @@ export const ProductionTree = (props: {
                   node={subTree}
                   onClearRecipe={onClearRecipe}
                   onSelectRecipe={onSelectRecipe}
+                  onSelectNew={onSelectNew}
                   onDetachSubtree={onDetachSubtree}
                   container={containerRef.current}
                   weights={weights}

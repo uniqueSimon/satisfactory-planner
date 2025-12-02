@@ -8,7 +8,7 @@ import { productDisplayNameMapping } from "./App";
 
 export const Drawer = (props: {
   savedFactories: Cluster[];
-  setSavedFactories: (newValue: Cluster[]) => void;
+  setSavedFactories: (newValue: Cluster[] | ((prev: Cluster[]) => Cluster[])) => void;
   loadedFactory: SavedFactory;
   setLoadedFactory: (factory: SavedFactory | null) => void;
   newInCluster: string | null;
@@ -18,8 +18,8 @@ export const Drawer = (props: {
 
   const onDelete = () => {
     props.setLoadedFactory(null);
-    props.setSavedFactories(
-      props.savedFactories.map((cluster) => ({
+    props.setSavedFactories((prev) =>
+      prev.map((cluster) => ({
         ...cluster,
         factories: cluster.factories.filter(
           (x) => x.id !== props.loadedFactory.id
@@ -28,8 +28,8 @@ export const Drawer = (props: {
     );
   };
   const onCopy = () => {
-    props.setSavedFactories([
-      ...props.savedFactories,
+    props.setSavedFactories((prev) => [
+      ...prev,
       {
         id: uuidv4(),
         title: "Copied",
@@ -38,32 +38,30 @@ export const Drawer = (props: {
     ]);
   };
   const onSave = () => {
-    const alreadyExists = props.savedFactories.some((cluster) =>
-      cluster.factories.some((f) => f.id === props.loadedFactory.id)
-    );
-    if (alreadyExists) {
-      props.setSavedFactories(
-        props.savedFactories.map((cluster) => ({
+    props.setSavedFactories((prev) => {
+      const alreadyExists = prev.some((cluster) =>
+        cluster.factories.some((f) => f.id === props.loadedFactory.id)
+      );
+      if (alreadyExists) {
+        return prev.map((cluster) => ({
           ...cluster,
           factories: cluster.factories.map((factory) =>
             factory.id === props.loadedFactory.id
               ? props.loadedFactory
               : factory
           ),
-        }))
-      );
-    } else {
-      props.setSavedFactories(
-        props.savedFactories.map((cluster) =>
+        }));
+      } else {
+        return prev.map((cluster) =>
           cluster.id === props.newInCluster
             ? {
                 ...cluster,
                 factories: [...cluster.factories, props.loadedFactory],
               }
             : cluster
-        )
-      );
-    }
+        );
+      }
+    });
   };
   const onClose = () => props.setLoadedFactory(null);
 
@@ -98,9 +96,12 @@ export const Drawer = (props: {
       </div>
       <ProductionTree
         savedFactory={props.loadedFactory}
-        setProductNodes={(productNodes) =>
-          props.setLoadedFactory({ id: props.loadedFactory.id, productNodes })
-        }
+        setProductNodes={(productNodes) => {
+          const newNodes = typeof productNodes === 'function'
+            ? productNodes(props.loadedFactory.productNodes)
+            : productNodes;
+          props.setLoadedFactory({ id: props.loadedFactory.id, productNodes: newNodes });
+        }}
       />
     </div>
   );

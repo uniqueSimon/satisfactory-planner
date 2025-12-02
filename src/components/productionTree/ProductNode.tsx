@@ -9,6 +9,7 @@ export const ProductNode = (props: {
   weights: Weights;
   showWeights: boolean;
   onSelectRecipe: (id: string, recipe: string) => void;
+  onSelectNew: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
   onDetachSubtree: (id: string) => void;
 }) => {
@@ -51,7 +52,7 @@ export const ProductNode = (props: {
           showWeights={props.showWeights}
           onClear={() => props.onClearRecipe(id)}
           onDetachSubtree={() => props.onDetachSubtree(id)}
-          onSelectNew={(recipe) => props.onSelectRecipe(id, recipe)}
+          onSelectNew={(recipe) => props.onSelectNew(id, recipe)}
         />
       ) : subRootPointer || recipes.length === 0 ? null : (
         <RecipeToAdd
