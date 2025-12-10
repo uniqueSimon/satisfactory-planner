@@ -1,40 +1,71 @@
-import fs from "fs";
 import { FGRecipe, Schematic } from "./allRecipesFromConfig";
 import gameData from "./gameData.json";
 
-const schematics = (gameData as unknown as [Schematic, FGRecipe]).find(
-  (x) =>
-    x.NativeClass ===
-    "/Script/CoreUObject.Class'/Script/FactoryGame.FGSchematic'"
-) as Schematic;
-export const recipeSchematicMapping = new Map<
-  string,
-  { tier: number; isAlternate: boolean }
->();
-for (const item of schematics!.Classes) {
-  const unlockedRecipes = item.mUnlocks.filter(
-    (x) => x.Class === "BP_UnlockRecipe_C"
-  );
-  for (const entry of unlockedRecipes) {
-    const splittedRecipes = entry.mRecipes.split(",");
-    for (const splitted of splittedRecipes) {
-      const matching = /\.Recipe_(.*)_C/.exec(splitted);
-      const recipe = matching?.[1];
-      if (recipe) {
-        const existing = recipeSchematicMapping.get(recipe);
-        //if there is a recipe without "EST_Alternate", i don't consider it as alternate.
-        if (!existing) {
-          recipeSchematicMapping.set(recipe, {
-            tier: +item.mTechTier,
-            isAlternate: item.mType === "EST_Alternate",
-          });
-        } else if (existing.isAlternate && item.mType !== "EST_Alternate") {
-          recipeSchematicMapping.set(recipe, {
-            tier: +item.mTechTier,
-            isAlternate: false,
-          });
+interface SchematicInfo {
+  tier: number;
+  isAlternate: boolean;
+}
+
+const extractRecipeName = (recipeRef: string): string | null => {
+  const matching = /\.Recipe_(.*)_C/.exec(recipeRef);
+  return matching?.[1] ?? null;
+};
+
+const shouldOverrideMapping = (
+  existing: SchematicInfo | undefined,
+  newInfo: SchematicInfo
+): boolean => {
+  if (!existing) {
+    return true;
+  }
+  return existing.isAlternate && !newInfo.isAlternate;
+};
+
+const buildRecipeSchematicMapping = (): Map<string, SchematicInfo> => {
+  const mapping = new Map<string, SchematicInfo>();
+  
+  const schematics = (gameData as unknown as [Schematic, FGRecipe]).find(
+    (x) =>
+      x.NativeClass ===
+      "/Script/CoreUObject.Class'/Script/FactoryGame.FGSchematic'"
+  ) as Schematic | undefined;
+  
+  if (!schematics) {
+    console.warn("Could not find FGSchematic class in game data");
+    return mapping;
+  }
+  
+  for (const schematic of schematics.Classes) {
+    const unlockedRecipes = schematic.mUnlocks.filter(
+      (unlock) => unlock.Class === "BP_UnlockRecipe_C"
+    );
+    
+    for (const unlock of unlockedRecipes) {
+      const recipeRefs = unlock.mRecipes.split(",");
+      
+      for (const recipeRef of recipeRefs) {
+        const recipeName = extractRecipeName(recipeRef);
+        
+        if (!recipeName) {
+          continue;
+        }
+        
+        const schematicInfo: SchematicInfo = {
+          tier: +schematic.mTechTier,
+          isAlternate: schematic.mType === "EST_Alternate",
+        };
+        
+        const existing = mapping.get(recipeName);
+        
+        if (shouldOverrideMapping(existing, schematicInfo)) {
+          mapping.set(recipeName, schematicInfo);
         }
       }
     }
   }
-}
+  
+  return mapping;
+};
+
+export const recipeSchematicMapping = buildRecipeSchematicMapping();
+console.log(`Built schematic mapping for ${recipeSchematicMapping.size} recipes`);
