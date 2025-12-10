@@ -16,6 +16,8 @@ export const maxRates = new Map([
   ["SAM", 10200],
   ["Sulfur", 10800],
   ["PolymerResin", 12600 * 6],
+  ["NuclearWaste", Infinity],
+  ["PlutoniumWaste", Infinity],
 ]);
 
 export const calculateProductWeights = (excludedResources: string[]) => {
