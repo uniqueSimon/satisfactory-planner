@@ -1,6 +1,7 @@
-import gameData from "./gameData.json";
+import gameDataRecipes from "./gameDataRecipes.json";
 import { recipeSchematicMapping } from "./recipeSchematicMapping";
 import { nuclearRecipes, coalRecipes, fuelRecipes } from "./generatorRecipes";
+import { productFormMapping } from "./getProductDisplayNames";
 
 export interface Recipe {
   recipeName: string;
@@ -29,50 +30,12 @@ const ALLOWED_MACHINES = new Set([
   "GeneratorFuel",
 ]);
 
-const LIQUID_PRODUCTS = new Set([
-  "LiquidOil",
-  "Water",
-  "HeavyOilResidue",
-  "LiquidFuel",
-  "LiquidTurboFuel",
-  "AluminaSolution",
-  "SulfuricAcid",
-  "NitricAcid",
-  "NitrogenGas",
-  "RocketFuel",
-  "IonizedFuel",
-]);
-
 const EXCLUDED_CATEGORIES = new Set(["Buildings", "Vehicle"]);
 
-export interface FGRecipe {
-  NativeClass: "/Script/CoreUObject.Class'/Script/FactoryGame.FGRecipe'";
-  Classes: {
-    ClassName: string;
-    FullName: string;
-    mProduct: string;
-    mIngredients: string;
-    mManufactoringDuration: string;
-    mDisplayName: string;
-    mProducedIn: string;
-  }[];
-}
-
-export interface Schematic {
-  NativeClass: "/Script/CoreUObject.Class'/Script/FactoryGame.FGSchematic'";
-  Classes: {
-    ClassName: string;
-    mDisplayName: string;
-    FullName: string;
-    mType: "EST_Custom" | "EST_Alternate";
-    mTechTier: string;
-    mUnlocks: { Class: "BP_UnlockRecipe_C"; mRecipes: string }[];
-  }[];
-}
-
-const convertRateUnits = (productName: string, rate: number) =>
-  LIQUID_PRODUCTS.has(productName) ? rate / 1000 : rate;
-
+const convertRateUnits = (productName: string, rate: number) => {
+  const form = productFormMapping.get(productName);
+  return form === "RF_LIQUID" || form === "RF_GAS" ? rate / 1000 : rate;
+};
 const getProductAndAmount = (rawString: string) => {
   const prodMatching =
     /BlueprintGeneratedClass.*\.(?:Desc|BP)_(.*)_C'",Amount=(\d+)/.exec(
@@ -171,16 +134,8 @@ const createRecipe = (
 };
 
 const allRecipes: Recipe[] = [];
-const recipeNativeClass = (gameData as unknown as [Schematic, FGRecipe]).find(
-  (x) =>
-    x.NativeClass === "/Script/CoreUObject.Class'/Script/FactoryGame.FGRecipe'"
-) as FGRecipe | undefined;
 
-if (!recipeNativeClass) {
-  throw new Error("Could not find FGRecipe class in game data");
-}
-
-for (const item of recipeNativeClass.Classes) {
+for (const item of gameDataRecipes) {
   const recipeName = item.ClassName.split("_").slice(1, -1).join("_");
   const displayName = item.mDisplayName;
   const fullName = item.FullName;

@@ -3,6 +3,7 @@ import gameData from "./gameData.json";
 interface ItemClass {
   ClassName: string;
   mDisplayName: string;
+  mForm?: "RF_SOLID" | "RF_LIQUID" | "RF_GAS";
 }
 
 interface NativeClass {
@@ -14,8 +15,9 @@ const extractProductName = (className: string): string => {
   return className.split("_").slice(1, -1).join("_");
 };
 
-const buildDisplayNameMapping = (): Map<string, string> => {
+const buildDisplayNameMapping = () => {
   const mapping = new Map<string, string>();
+  const formMapping = new Map<string, "RF_SOLID" | "RF_LIQUID" | "RF_GAS">();
   const nativeClasses = gameData as NativeClass[];
 
   for (const nativeClass of nativeClasses) {
@@ -29,19 +31,24 @@ const buildDisplayNameMapping = (): Map<string, string> => {
 
       if (productName && displayName) {
         mapping.set(productName, displayName);
+        if (item.mForm) {
+          formMapping.set(productName, item.mForm);
+        }
       }
     }
   }
 
-  return mapping;
+  return { mapping, formMapping };
 };
 
-const productDisplayNameMapping = buildDisplayNameMapping();
+const { mapping, formMapping } = buildDisplayNameMapping();
 
-productDisplayNameMapping.set("Energy", "Energy");
+mapping.set("Energy", "Energy");
 
-export const displayNames = Array.from(
-  productDisplayNameMapping.entries()
-).sort((a, b) => a[0].localeCompare(b[0]));
+export const displayNames = Array.from(mapping.entries()).sort((a, b) =>
+  a[0].localeCompare(b[0])
+);
 
 console.log(`Extracted ${displayNames.length} product display names`);
+
+export const productFormMapping = formMapping;

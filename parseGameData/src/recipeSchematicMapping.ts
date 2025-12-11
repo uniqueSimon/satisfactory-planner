@@ -1,5 +1,4 @@
-import { FGRecipe, Schematic } from "./allRecipesFromConfig";
-import gameData from "./gameData.json";
+import gameDataSchematics from "./gameDataSchematics.json";
 
 interface SchematicInfo {
   tier: number;
@@ -23,49 +22,40 @@ const shouldOverrideMapping = (
 
 const buildRecipeSchematicMapping = (): Map<string, SchematicInfo> => {
   const mapping = new Map<string, SchematicInfo>();
-  
-  const schematics = (gameData as unknown as [Schematic, FGRecipe]).find(
-    (x) =>
-      x.NativeClass ===
-      "/Script/CoreUObject.Class'/Script/FactoryGame.FGSchematic'"
-  ) as Schematic | undefined;
-  
-  if (!schematics) {
-    console.warn("Could not find FGSchematic class in game data");
-    return mapping;
-  }
-  
-  for (const schematic of schematics.Classes) {
+
+  for (const schematic of gameDataSchematics) {
     const unlockedRecipes = schematic.mUnlocks.filter(
       (unlock) => unlock.Class === "BP_UnlockRecipe_C"
-    );
-    
+    ) as { Class: string; mRecipes: string }[];
+
     for (const unlock of unlockedRecipes) {
       const recipeRefs = unlock.mRecipes.split(",");
-      
+
       for (const recipeRef of recipeRefs) {
         const recipeName = extractRecipeName(recipeRef);
-        
+
         if (!recipeName) {
           continue;
         }
-        
+
         const schematicInfo: SchematicInfo = {
           tier: +schematic.mTechTier,
           isAlternate: schematic.mType === "EST_Alternate",
         };
-        
+
         const existing = mapping.get(recipeName);
-        
+
         if (shouldOverrideMapping(existing, schematicInfo)) {
           mapping.set(recipeName, schematicInfo);
         }
       }
     }
   }
-  
+
   return mapping;
 };
 
 export const recipeSchematicMapping = buildRecipeSchematicMapping();
-console.log(`Built schematic mapping for ${recipeSchematicMapping.size} recipes`);
+console.log(
+  `Built schematic mapping for ${recipeSchematicMapping.size} recipes`
+);
