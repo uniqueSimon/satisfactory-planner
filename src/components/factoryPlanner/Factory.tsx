@@ -3,7 +3,7 @@ import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { useDraggable } from "@/reusableComp/useDraggable";
 import { twMerge } from "tailwind-merge";
 import { DetailedView } from "./DetailedView";
-import { Button } from "@/reusableComp/Button";
+import { Button } from "@/components/ui/button";
 
 export const Factory = (props: {
   factory: SavedFactory;
@@ -46,6 +46,8 @@ export const Factory = (props: {
         )}
       >
         <Button
+          variant="outline"
+          size='lg'
           onMouseEnter={() => props.setHoveredFactoryId(props.factory.id)}
           onMouseLeave={() => props.setHoveredFactoryId(null)}
           onClick={() => props.setLoadedFactory(props.factory)}

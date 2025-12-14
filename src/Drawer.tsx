@@ -1,14 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 import { Cluster, SavedFactory } from "./interfaces";
 import { ProductionTree } from "./components/productionTree/ProductionTree";
-import { Button } from "./reusableComp/Button";
+import { Button } from "@/components/ui/button";
 import { Copy, Save, Trash, X } from "lucide-react";
 import { Icon } from "./reusableComp/Icon";
 import { productDisplayNameMapping } from "./App";
 
 export const Drawer = (props: {
   savedFactories: Cluster[];
-  setSavedFactories: (newValue: Cluster[] | ((prev: Cluster[]) => Cluster[])) => void;
+  setSavedFactories: (
+    newValue: Cluster[] | ((prev: Cluster[]) => Cluster[])
+  ) => void;
   loadedFactory: SavedFactory;
   setLoadedFactory: (factory: SavedFactory | null) => void;
   newInCluster: string | null;
@@ -80,16 +82,28 @@ export const Drawer = (props: {
           <div>New factory!</div>
         )}
         <div>
-          <Button onClick={onSave} disabled={notReadyForSaving}>
+          <Button
+            variant="outline"
+            onClick={onSave}
+            disabled={notReadyForSaving}
+          >
             <Save />
           </Button>
-          <Button onClick={onDelete} disabled={notReadyForSaving}>
+          <Button
+            variant="outline"
+            onClick={onDelete}
+            disabled={notReadyForSaving}
+          >
             <Trash />
           </Button>
-          <Button onClick={onCopy} disabled={notReadyForSaving}>
+          <Button
+            variant="outline"
+            onClick={onCopy}
+            disabled={notReadyForSaving}
+          >
             <Copy />
           </Button>
-          <Button onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             <X />
           </Button>
         </div>
@@ -97,10 +111,14 @@ export const Drawer = (props: {
       <ProductionTree
         savedFactory={props.loadedFactory}
         setProductNodes={(productNodes) => {
-          const newNodes = typeof productNodes === 'function'
-            ? productNodes(props.loadedFactory.productNodes)
-            : productNodes;
-          props.setLoadedFactory({ id: props.loadedFactory.id, productNodes: newNodes });
+          const newNodes =
+            typeof productNodes === "function"
+              ? productNodes(props.loadedFactory.productNodes)
+              : productNodes;
+          props.setLoadedFactory({
+            id: props.loadedFactory.id,
+            productNodes: newNodes,
+          });
         }}
       />
     </div>

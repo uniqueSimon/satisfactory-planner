@@ -23,6 +23,9 @@ export const LocalStorage = (props: {
           <li>Backing up before clearing browser data</li>
           <li>Keeping a copy for later use</li>
         </ul>
+        <p>
+          Stores saved factories and found alternate recipes in a json-file.{" "}
+        </p>
         <ExportLocalStorage
           foundAltRecipes={foundAltRecipes}
           savedFactories={props.savedFactories}
@@ -37,6 +40,9 @@ export const LocalStorage = (props: {
           <li>Loading configs from another browser</li>
           <li>Switching between different setups</li>
         </ul>
+        <p>
+          Imports saved factories and found alternate recipes from a json-file
+        </p>
         <ImportLocalStorage
           setFoundAltRecipes={setFoundAltRecipes}
           setSavedFactories={props.setSavedFactories}

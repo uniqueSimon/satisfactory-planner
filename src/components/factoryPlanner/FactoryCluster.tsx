@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { Button, Card, Input } from "antd";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { AccumulatedRates } from "./AccumulatedRates";
 import { useEffect, useRef, useState } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -100,53 +102,56 @@ export const FactoryCluster = (props: {
     props.setNewInCluster(props.cluster.id);
   };
   return (
-    <Card
-      title={
+    <Card>
+      <CardHeader>
         <div className="flex justify-between">
           <EditableTitle
             title={props.cluster.title}
             submit={(title) => props.updateCluster({ ...props.cluster, title })}
           />
-          <Button onClick={props.onRemoveCluster}>
+          <Button variant="outline" size="icon" onClick={props.onRemoveCluster}>
             <X />
           </Button>
         </div>
-      }
-    >
-      <div
-        ref={refDropable}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 10,
-        }}
-      >
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {props.cluster.factories.map((factory) => (
-            <Factory
-              key={factory.id}
-              factory={factory}
-              hoveredAccumulatedProduct={hoveredAccumulatedProduct}
-              selected={props.loadedFactory?.id === factory.id}
-              isHovered={props.hoveredFactoryId === factory.id}
-              setLoadedFactory={props.setLoadedFactory}
-              setHoveredFactoryId={props.setHoveredFactoryId}
-              onDrop={onMoveCard}
-            />
-          ))}
-          <div style={{ border: "solid", borderColor: "white" }}>
-            <Button onClick={onAddFactory}>+ new</Button>
+      </CardHeader>
+      <CardContent>
+        <div
+          ref={refDropable}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 10,
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            {props.cluster.factories.map((factory) => (
+              <Factory
+                key={factory.id}
+                factory={factory}
+                hoveredAccumulatedProduct={hoveredAccumulatedProduct}
+                selected={props.loadedFactory?.id === factory.id}
+                isHovered={props.hoveredFactoryId === factory.id}
+                setLoadedFactory={props.setLoadedFactory}
+                setHoveredFactoryId={props.setHoveredFactoryId}
+                onDrop={onMoveCard}
+              />
+            ))}
+            <div style={{ border: "solid", borderColor: "white" }}>
+              <Button variant="outline" onClick={onAddFactory}>
+                + new
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-      <AccumulatedRates
-        showResources={props.showResources}
-        rateBalance={props.rateBalance}
-        cluster={props.cluster.factories}
-        selectedFactory={props.loadedFactory}
-        hoveredFactory={hoveredFactory}
-        setHoveredAccumulatedProduct={setHoveredAccumulatedProduct}
-      />
+        <AccumulatedRates
+          showResources={props.showResources}
+          rateBalance={props.rateBalance}
+          cluster={props.cluster.factories}
+          selectedFactory={props.loadedFactory}
+          hoveredFactory={hoveredFactory}
+          setHoveredAccumulatedProduct={setHoveredAccumulatedProduct}
+        />
+      </CardContent>
     </Card>
   );
 };
@@ -160,7 +165,7 @@ const EditableTitle = (props: {
   return editMode ? (
     <div className="flex gap-2 items-center">
       <Input
-        style={{ width: 300 }}
+        className="w-72"
         value={current}
         onChange={(e) => setCurrent(e.target.value)}
       />

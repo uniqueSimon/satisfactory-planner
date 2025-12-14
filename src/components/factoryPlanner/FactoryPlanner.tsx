@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
-import { Form, Switch, Typography } from "antd";
+import { FormItem } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 import { CustomCard } from "@/reusableComp/CustomCard";
 import { useState } from "react";
 import { FactoryCluster } from "./FactoryCluster";
 import { accumulateRates } from "./accumulateRates";
 import { SquarePlus } from "lucide-react";
-import { Button } from "@/reusableComp/Button";
+import { Button } from "@/components/ui/button";
 import { Cluster, SavedFactory } from "@/interfaces";
 
 export const FactoryPlanner = (props: {
@@ -41,11 +42,11 @@ export const FactoryPlanner = (props: {
   };
   return (
     <div className="p-4 flex-1 overflow-auto pointer-events-auto">
-      <Typography.Title>Satisfactory Planner</Typography.Title>
+      <h1 className="text-3xl font-bold mb-4">Satisfactory Planner</h1>
       <CustomCard>
-        <Form.Item label="Show resources" style={{ margin: 0 }}>
+        <FormItem label="Show resources" className="mb-0">
           <Switch checked={showResources} onChange={setShowResources} />
-        </Form.Item>
+        </FormItem>
         {props.savedFactories.map((cluster, index) => (
           <FactoryCluster
             key={index}

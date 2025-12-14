@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { productDisplayNameMapping } from "@/App";
 import { Icon } from "@/reusableComp/Icon";
-import { Tooltip } from "@/reusableComp/Tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { NumberBubble } from "@/reusableComp/NumberBubble";
 
 export const RecipeToAdd = (props: {

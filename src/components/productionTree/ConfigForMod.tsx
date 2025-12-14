@@ -1,7 +1,7 @@
 import { ProductNode } from "@/interfaces";
 import { useRecipes } from "@/RecipesContext";
-import { Button } from "@/reusableComp/Button";
-import { Collapse } from "@/reusableComp/Collapse";
+import { Button } from "@/components/ui/button";
+import { Collapse } from "@/components/ui/collapse";
 import { Check, ClipboardPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 

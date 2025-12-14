@@ -1,5 +1,6 @@
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
-import { Collapse, Tooltip } from "antd";
+import { Collapse } from "@/components/ui/collapse";
+import { Tooltip } from "@/components/ui/tooltip";
 import { RateBalance } from "./accumulateRates";
 import { maxRates } from "@/calculateProductWeights";
 import { SavedFactory } from "@/interfaces";
@@ -50,84 +51,67 @@ export const AccumulatedRates = (props: {
     : [];
 
   return (
-    <Collapse
-      size="small"
-      items={[
-        {
-          label: "Accumulated product rates",
-          children: (
-            <div style={{ border: "solid grey" }}>
+    <Collapse title="Accumulated product rates">
+      <div className="border border-gray-300">
+        <div className="flex flex-wrap">
+          {filtered.map((productRate, i) => {
+            const isResource = allResources.includes(productRate.product);
+            const notEnough =
+              productRate.rate + productRate.rateFromOtherClusters < 0;
+            const relevantForClicked = relevantProducts.includes(
+              productRate.product
+            );
+            const relevantForHovered = relevantProductsHovered.includes(
+              productRate.product
+            );
+            return (
               <div
+                key={productRate.product}
+                onMouseEnter={() =>
+                  props.setHoveredAccumulatedProduct(productRate.product)
+                }
+                onMouseLeave={() =>
+                  props.setHoveredAccumulatedProduct(null)
+                }
+                className="flex items-center mr-1 border-2 rounded-lg"
                 style={{
-                  display: "flex",
-                  flexWrap: "wrap",
+                  color: isResource
+                    ? "lightgrey"
+                    : notEnough
+                    ? "red"
+                    : undefined,
+                  borderStyle:
+                    relevantForHovered && !relevantForClicked
+                      ? "dotted"
+                      : "solid",
+                  borderColor:
+                    relevantForClicked || relevantForHovered
+                      ? "grey"
+                      : "white",
                 }}
               >
-                {filtered.map((productRate, i) => {
-                  const isResource = allResources.includes(productRate.product);
-                  const notEnough =
-                    productRate.rate + productRate.rateFromOtherClusters < 0;
-                  const relevantForClicked = relevantProducts.includes(
-                    productRate.product
-                  );
-                  const relevantForHovered = relevantProductsHovered.includes(
-                    productRate.product
-                  );
-                  return (
-                    <div
-                      key={productRate.product}
-                      onMouseEnter={() =>
-                        props.setHoveredAccumulatedProduct(productRate.product)
-                      }
-                      onMouseLeave={() =>
-                        props.setHoveredAccumulatedProduct(null)
-                      }
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginRight: 5,
-                        color: isResource
-                          ? "lightgrey"
-                          : notEnough
-                          ? "red"
-                          : undefined,
-                        borderStyle:
-                          relevantForHovered && !relevantForClicked
-                            ? "dotted"
-                            : "solid",
-                        borderColor:
-                          relevantForClicked || relevantForHovered
-                            ? "grey"
-                            : "white",
-                        borderRadius: 8,
-                        borderWidth: 2,
-                      }}
-                    >
-                      <Tooltip
-                        title={
-                          isResource
-                            ? ""
-                            : `${
-                                productRate.rate < 0 ? "Produced" : "Needed"
-                              }: ${Math.abs(
-                                Math.round(
-                                  productRate.rateFromOtherClusters * 100
-                                ) / 100
-                              )}/min`
-                        }
-                      >
-                        {`${Math.round(productRate.rate * 100) / 100}/min`}
-                      </Tooltip>
-                      <IconWithTooltip item={productRate.product} />
-                      {i < filtered.length - 1 ? "," : ""}
-                    </div>
-                  );
-                })}
+                <Tooltip
+                  tooltip={
+                    isResource
+                      ? ""
+                      : `${
+                          productRate.rate < 0 ? "Produced" : "Needed"
+                        }: ${Math.abs(
+                          Math.round(
+                            productRate.rateFromOtherClusters * 100
+                          ) / 100
+                        )}/min`
+                  }
+                >
+                  {`${Math.round(productRate.rate * 100) / 100}/min`}
+                </Tooltip>
+                <IconWithTooltip item={productRate.product} />
+                {i < filtered.length - 1 ? "," : ""}
               </div>
-            </div>
-          ),
-        },
-      ]}
-    />
+            );
+          })}
+        </div>
+      </div>
+    </Collapse>
   );
 };

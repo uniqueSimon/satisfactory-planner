@@ -1,20 +1,21 @@
-import { InputNumber } from "antd";
+import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 
 export const InputOnBlur = (props: {
   commitedValue: number;
   setCommitedValue: (value: number) => void;
 }) => {
-  const [inputValue, setInputValue] = useState<number | null>();
-  useEffect(() => setInputValue(props.commitedValue), [props.commitedValue]);
+  const [inputValue, setInputValue] = useState<string>("");
+  useEffect(() => setInputValue(String(props.commitedValue)), [props.commitedValue]);
   return (
-    <InputNumber
+    <Input
+      type="number"
       value={inputValue}
-      onChange={(x) => setInputValue(x)}
+      onChange={(e) => setInputValue(e.target.value)}
       onBlur={(e) =>
         props.setCommitedValue(isNaN(+e.target.value) ? 0 : +e.target.value)
       }
-      style={{ width: 100, marginRight: 8 }}
+      className="w-24 mr-2"
     />
   );
 };

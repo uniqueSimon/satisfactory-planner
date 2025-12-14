@@ -1,13 +1,13 @@
-import { useState, ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
-import { twMerge } from "tailwind-merge";
+import { useState, ReactNode } from "react"
+import { ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface CollapseProps {
-  title: ReactNode;
-  children: ReactNode;
-  defaultOpen?: boolean;
-  className?: string;
-  disableToggle?: boolean;
+  title: ReactNode
+  children: ReactNode
+  defaultOpen?: boolean
+  className?: string
+  disableToggle?: boolean
 }
 
 export const Collapse = ({
@@ -17,15 +17,14 @@ export const Collapse = ({
   className,
   disableToggle = false,
 }: CollapseProps) => {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = useState(defaultOpen)
 
   const handleToggle = () => {
-    if (!disableToggle) setOpen(!open);
-  };
+    if (!disableToggle) setOpen(!open)
+  }
 
   return (
-    <div className={twMerge("border rounded-lg bg-white shadow-sm", className)}>
-      {/* Header (no longer a <button>) */}
+    <div className={cn("border rounded-lg bg-white shadow-sm", className)}>
       <div
         role="button"
         tabIndex={0}
@@ -36,7 +35,7 @@ export const Collapse = ({
         <div className="flex items-center justify-between w-full">
           {title}
           <ChevronDown
-            className={twMerge(
+            className={cn(
               "h-4 w-4 transition-transform duration-200 ml-2",
               open && "rotate-180"
             )}
@@ -44,9 +43,8 @@ export const Collapse = ({
         </div>
       </div>
 
-      {/* Content */}
       <div
-        className={twMerge(
+        className={cn(
           "overflow-hidden transition-all duration-300 ease-in-out",
           open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
         )}
@@ -54,5 +52,5 @@ export const Collapse = ({
         <div className="p-4 border-t">{children}</div>
       </div>
     </div>
-  );
-};
+  )
+}

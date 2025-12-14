@@ -1,5 +1,6 @@
 import { MultiSelectDropdown } from "@/reusableComp/MultiSelectDropdown";
-import { Form, Switch } from "antd";
+import { FormItem } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 
 interface WeightingPointsProps {
   showWeights: boolean;
@@ -12,7 +13,7 @@ interface WeightingPointsProps {
 export const WeightingPoints = (props: WeightingPointsProps) => {
   return (
     <div className="bg-white border rounded-xl shadow-sm px-4 py-2">
-      <Form.Item
+      <FormItem
         label={
           <span>
             Show{" "}
@@ -24,10 +25,10 @@ export const WeightingPoints = (props: WeightingPointsProps) => {
             </span>
           </span>
         }
-        style={{ margin: 0 }}
+        className="mb-0"
       >
         <Switch checked={props.showWeights} onChange={props.setShowWeights} />
-      </Form.Item>
+      </FormItem>
 
       {props.showWeights && (
         <>

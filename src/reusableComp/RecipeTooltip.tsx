@@ -1,4 +1,4 @@
-import { Tooltip } from "antd";
+import { Tooltip } from "@/components/ui/tooltip";
 import { IconWithTooltip } from "./IconWithTooltip";
 import { Recipe } from "@/interfaces";
 
@@ -9,18 +9,17 @@ export const RecipeTooltip = (props: { recipe: Recipe; rate: number }) => {
   const ingredients = props.recipe.ingredients;
   return (
     <Tooltip
-      styles={{ root: { whiteSpace: "nowrap", maxWidth: "none" } }}
-      title={
-        <div style={{ display: "flex", alignItems: "center" }}>
+      tooltip={
+        <div className="flex items-center whitespace-nowrap">
           {ingredients.map((ingredient, i) => {
             const ingredientRate =
               (props.rate * ingredient.amount) / props.recipe.product.amount;
             const notLastIngredient = i < ingredients.length - 1;
             return (
-              <div key={i} style={{ display: "flex", alignItems: "center" }}>
+              <div key={i} className="flex items-center">
                 {`${Math.round(ingredientRate * 100) / 100}/min`}
                 <IconWithTooltip item={ingredient.name} />
-                {notLastIngredient && <div style={{ margin: 5 }}>+</div>}
+                {notLastIngredient && <div className="mx-1">+</div>}
               </div>
             );
           })}
