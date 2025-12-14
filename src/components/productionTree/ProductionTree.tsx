@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ProductNode, SavedFactory } from "../../interfaces";
 import { ProductionSetupForm } from "./ProductionSetupForm";
 import { RecursiveTree } from "./RecursiveTree";
@@ -23,6 +23,11 @@ export const ProductionTree = (props: {
   const { availableRecipes } = useRecipes();
   const nodes = props.savedFactory.productNodes;
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerElement, setContainerElement] = useState<HTMLElement | null>(null);
+  
+  useEffect(() => {
+    setContainerElement(containerRef.current);
+  }, [containerRef.current]);
 
   const root = nodes.find((node) => node.type === "ROOT");
 
@@ -110,7 +115,7 @@ export const ProductionTree = (props: {
                 onSelectRecipe={onSelectRecipe}
                 onSelectNew={onSelectNew}
                 onDetachSubtree={onDetachSubtree}
-                container={containerRef.current}
+                container={containerElement}
                 weights={weights}
                 showWeights={showWeights}
               />
@@ -123,7 +128,7 @@ export const ProductionTree = (props: {
                   onSelectRecipe={onSelectRecipe}
                   onSelectNew={onSelectNew}
                   onDetachSubtree={onDetachSubtree}
-                  container={containerRef.current}
+                  container={containerElement}
                   weights={weights}
                   showWeights={showWeights}
                 />

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { productDisplayNameMapping } from "@/App";
 import { Icon } from "@/reusableComp/Icon";
 import { Tooltip } from "@/reusableComp/Tooltip";
+import { NumberBubble } from "@/reusableComp/NumberBubble";
 
 export const RecipeToAdd = (props: {
   recipes: RecipeWithWeight[];
@@ -58,19 +59,20 @@ export const RecipeSelected = (props: {
     <div className="flex flex-col items-center">
       <div className="w-full h-0.5 mb-1 bg-gray-400" />
       <div className="text-xs pt-1">{machineCount.toFixed(1)}</div>
-      <Tooltip
-        tooltip={
-          <div>
-            <div className="font-bold">{producedIn}</div>
-            {recipe.displayName}
-          </div>
-        }
-      >
-        <Icon item={recipe.producedIn} />
-      </Tooltip>
-      {props.showWeights && (
-        <div className="text-xs pt-1">({(weight * props.rate).toFixed(1)})</div>
-      )}
+      <div className="relative">
+        <NumberBubble show={props.showWeights} number={weight * props.rate}>
+          <Tooltip
+            tooltip={
+              <div>
+                <div className="font-bold">{producedIn}</div>
+                {recipe.displayName}
+              </div>
+            }
+          >
+            <Icon item={recipe.producedIn} />
+          </Tooltip>
+        </NumberBubble>
+      </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

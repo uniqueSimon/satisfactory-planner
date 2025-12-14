@@ -12,7 +12,20 @@ interface WeightingPointsProps {
 export const WeightingPoints = (props: WeightingPointsProps) => {
   return (
     <div className="bg-white border rounded-xl shadow-sm px-4 py-2">
-      <Form.Item label="Show weighting points" style={{ margin: 0 }}>
+      <Form.Item
+        label={
+          <span>
+            Show{" "}
+            <span
+              className="underline decoration-dotted cursor-help"
+              title="Weighting points show how scarce a resource is. A rate of 1/min iron ore has a weighting point of 1."
+            >
+              weighting points
+            </span>
+          </span>
+        }
+        style={{ margin: 0 }}
+      >
         <Switch checked={props.showWeights} onChange={props.setShowWeights} />
       </Form.Item>
 

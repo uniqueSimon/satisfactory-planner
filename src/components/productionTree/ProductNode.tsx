@@ -3,6 +3,7 @@ import { RecipeSelected, RecipeToAdd } from "./RecipeSelector";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { cn } from "@/lib/utils";
 import { useRecipes } from "@/RecipesContext";
+import { NumberBubble } from "@/reusableComp/NumberBubble";
 
 export const ProductNode = (props: {
   node: ProductNodeNested;
@@ -39,10 +40,9 @@ export const ProductNode = (props: {
       {(type === "SUB_ROOT" || type === "ROOT") && (
         <div className="text-xs pt-1">{label}</div>
       )}
-      {props.showWeights && (
-        <div className="text-xs pt-1">({(minWeight * rate).toFixed(1)})</div>
-      )}
-      <IconWithTooltip item={name} />
+      <NumberBubble show={props.showWeights} number={minWeight * rate}>
+        <IconWithTooltip item={name} />
+      </NumberBubble>
       {buildRecipe ? (
         <RecipeSelected
           recipes={recipesWithWeights}
