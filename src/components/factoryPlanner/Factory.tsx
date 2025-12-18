@@ -4,6 +4,7 @@ import { useDraggable } from "@/reusableComp/useDraggable";
 import { twMerge } from "tailwind-merge";
 import { DetailedView } from "./DetailedView";
 import { Button } from "@/components/ui/button";
+import { useDirtyState } from "@/DirtyStateContext";
 
 export const Factory = (props: {
   factory: SavedFactory;
@@ -18,7 +19,8 @@ export const Factory = (props: {
     closestEdge: "left" | "right"
   ) => void;
 }) => {
-  const ref = useDraggable(props.factory.id, props.onDrop);
+  const { isDirty } = useDirtyState();
+  const ref = useDraggable(props.factory.id, props.onDrop, isDirty);
 
   const productNodes = props.factory.productNodes;
   const root = productNodes.find((node) => node.type === "ROOT")!;
@@ -47,7 +49,7 @@ export const Factory = (props: {
       >
         <Button
           variant="outline"
-          size='lg'
+          size="lg"
           onMouseEnter={() => props.setHoveredFactoryId(props.factory.id)}
           onMouseLeave={() => props.setHoveredFactoryId(null)}
           onClick={() => props.setLoadedFactory(props.factory)}

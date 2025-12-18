@@ -1,12 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { ProductNode, Recipe } from "@/interfaces";
-import { getDescendantIds } from "./common";
+import { ProductNode } from "@/interfaces";
 
-export const moveToSubtree = (
-  productNodes: ProductNode[],
-  id: string,
-  availableRecipes: Recipe[]
-) => {
+export const moveToSubtree = (productNodes: ProductNode[], id: string) => {
   const current = productNodes.find((p) => p.id === id)!;
 
   // Check if for that product a subtree already exists
@@ -14,11 +9,8 @@ export const moveToSubtree = (
     (p) => p.type === "SUB_ROOT" && p.name === current.name
   );
   if (existingSubRoot) {
-    return joinToExistingSubTree(
-      productNodes,
-      current,
-      existingSubRoot,
-      availableRecipes
+    return productNodes.map((p) =>
+      p.id === id ? convertToPointer(p, existingSubRoot.id) : p
     );
   }
 
@@ -42,51 +34,3 @@ const convertToPointer = (node: ProductNode, pointer: string): ProductNode => ({
   buildRecipe: undefined,
   children: [],
 });
-
-const joinToExistingSubTree = (
-  productNodes: ProductNode[],
-  current: ProductNode,
-  subRoot: ProductNode,
-  availableRecipes: Recipe[]
-) => {
-  const subRootId = subRoot.id;
-  const childrenToRemove = getDescendantIds(productNodes, current.id);
-  const newRate = subRoot.rate + current.rate;
-  const newNodes = productNodes
-    .filter((p) => !childrenToRemove.includes(p.id))
-    .map((p) =>
-      p.id === current.id
-        ? convertToPointer(p, subRootId)
-        : p.id === subRootId
-        ? { ...p, rate: newRate }
-        : p
-    );
-  return recalcDescendantRates(newNodes, availableRecipes, subRootId);
-};
-
-const recalcDescendantRates = (
-  nodes: ProductNode[],
-  availableRecipes: Recipe[],
-  nodeId: string
-): ProductNode[] => {
-  const updatedNodes = [...nodes];
-  const node = updatedNodes.find((n) => n.id === nodeId);
-  if (!node || !node.buildRecipe) return updatedNodes;
-
-  const recipe = availableRecipes.find(
-    (r) => r.recipeName === node.buildRecipe
-  )!;
-
-  for (const ingredient of recipe.ingredients) {
-    const ingredientRate =
-      (ingredient.amount / recipe.product.amount) * node.rate;
-    const child = updatedNodes.find(
-      (n) => node.children.includes(n.id) && n.name === ingredient.name
-    )!;
-    child.rate = ingredientRate;
-
-    recalcDescendantRates(updatedNodes, availableRecipes, child.id);
-  }
-
-  return updatedNodes;
-};

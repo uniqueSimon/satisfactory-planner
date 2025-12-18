@@ -8,17 +8,17 @@ export const RecursiveTree = (props: {
   ref?: React.RefObject<HTMLDivElement | null>;
   node: ProductNodeNested;
   weights: Weights;
-  showWeights: boolean;
   onSelectRecipe: (id: string, recipe: string) => void;
   onSelectNew: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
-  onDetachSubtree: (id: string) => void;
+  onUpdateRate: (nodeId: string, newRate: number) => void;
   container: HTMLElement | null;
+  onMoveToSubtree: (id: string) => void;
+  onReattachSubtree: (id: string) => void;
 }) => {
   const { ref, divEle } = useUpdatingRef();
 
   const hasChildren = props.node.children.length > 0;
-  const label = `${props.node.rate.toFixed(1)} /min`;
 
   const from = props.ref?.current ?? null;
   return (
@@ -27,16 +27,17 @@ export const RecursiveTree = (props: {
         container={props.container}
         from={from}
         to={divEle}
-        label={label}
+        rate={props.node.rate}
+        onRateChange={(newRate) => props.onUpdateRate(props.node.id, newRate)}
       />
       <div ref={ref}>
-        <ProductNode {...props} showWeights={props.showWeights} />
+        <ProductNode {...props} />
       </div>
 
       {hasChildren && (
         <div className="flex mt-8 justify-center">
           {props.node.children!.map((child) => (
-            <div key={child.id} className="mx-4">
+            <div key={child.id} className="min-w-20">
               <RecursiveTree {...props} node={child} ref={ref} />
             </div>
           ))}

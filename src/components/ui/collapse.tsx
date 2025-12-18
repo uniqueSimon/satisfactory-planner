@@ -45,8 +45,8 @@ export const Collapse = ({
 
       <div
         className={cn(
-          "overflow-hidden transition-all duration-300 ease-in-out",
-          open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+          "transition-all duration-300 ease-in-out",
+          open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 overflow-hidden"
         )}
       >
         <div className="p-4 border-t">{children}</div>

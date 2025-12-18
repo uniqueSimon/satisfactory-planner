@@ -1,74 +1,30 @@
-import { v4 as uuidv4 } from "uuid";
-import { Cluster, SavedFactory } from "./interfaces";
+import { ProductNode, SavedFactory } from "./interfaces";
 import { ProductionTree } from "./components/productionTree/ProductionTree";
 import { Button } from "@/components/ui/button";
 import { Copy, Save, Trash, X } from "lucide-react";
 import { Icon } from "./reusableComp/Icon";
 import { productDisplayNameMapping } from "./App";
+import { useDirtyState } from "./DirtyStateContext";
+import { TreeSettingsProvider } from "./context/TreeSettingsContext";
 
 export const Drawer = (props: {
-  savedFactories: Cluster[];
-  setSavedFactories: (
-    newValue: Cluster[] | ((prev: Cluster[]) => Cluster[])
-  ) => void;
   loadedFactory: SavedFactory;
   setLoadedFactory: (factory: SavedFactory | null) => void;
-  newInCluster: string | null;
+  onClickedDrawerButton: (type: "SAVE" | "DELETE" | "COPY" | "CLOSE") => void;
 }) => {
+  const { isDirty } = useDirtyState();
   const nodes = props.loadedFactory.productNodes;
   const root = nodes.find((node) => node.type === "ROOT");
 
-  const onDelete = () => {
-    props.setLoadedFactory(null);
-    props.setSavedFactories((prev) =>
-      prev.map((cluster) => ({
-        ...cluster,
-        factories: cluster.factories.filter(
-          (x) => x.id !== props.loadedFactory.id
-        ),
-      }))
-    );
-  };
-  const onCopy = () => {
-    props.setSavedFactories((prev) => [
-      ...prev,
-      {
-        id: uuidv4(),
-        title: "Copied",
-        factories: [{ ...props.loadedFactory, id: uuidv4() }],
-      },
-    ]);
-  };
-  const onSave = () => {
-    props.setSavedFactories((prev) => {
-      const alreadyExists = prev.some((cluster) =>
-        cluster.factories.some((f) => f.id === props.loadedFactory.id)
-      );
-      if (alreadyExists) {
-        return prev.map((cluster) => ({
-          ...cluster,
-          factories: cluster.factories.map((factory) =>
-            factory.id === props.loadedFactory.id
-              ? props.loadedFactory
-              : factory
-          ),
-        }));
-      } else {
-        return prev.map((cluster) =>
-          cluster.id === props.newInCluster
-            ? {
-                ...cluster,
-                factories: [...cluster.factories, props.loadedFactory],
-              }
-            : cluster
-        );
-      }
-    });
-  };
-  const onClose = () => props.setLoadedFactory(null);
-
   const notReadyForSaving =
     !root || !root.name || !root.rate || !root.buildRecipe;
+
+  const setNewProduct = (node: ProductNode) => {
+    props.setLoadedFactory({
+      id: props.loadedFactory.id,
+      productNodes: [node],
+    });
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -84,43 +40,46 @@ export const Drawer = (props: {
         <div>
           <Button
             variant="outline"
-            onClick={onSave}
-            disabled={notReadyForSaving}
+            onClick={() => props.onClickedDrawerButton("SAVE")}
+            disabled={notReadyForSaving || !isDirty}
           >
             <Save />
           </Button>
           <Button
             variant="outline"
-            onClick={onDelete}
+            onClick={() => props.onClickedDrawerButton("DELETE")}
             disabled={notReadyForSaving}
           >
             <Trash />
           </Button>
           <Button
             variant="outline"
-            onClick={onCopy}
+            onClick={() => props.onClickedDrawerButton("COPY")}
             disabled={notReadyForSaving}
           >
             <Copy />
           </Button>
-          <Button variant="outline" onClick={onClose}>
+          <Button
+            variant="outline"
+            onClick={() => props.onClickedDrawerButton("CLOSE")}
+          >
             <X />
           </Button>
         </div>
       </div>
-      <ProductionTree
-        savedFactory={props.loadedFactory}
-        setProductNodes={(productNodes) => {
-          const newNodes =
-            typeof productNodes === "function"
-              ? productNodes(props.loadedFactory.productNodes)
-              : productNodes;
-          props.setLoadedFactory({
-            id: props.loadedFactory.id,
-            productNodes: newNodes,
-          });
-        }}
-      />
+      <TreeSettingsProvider>
+        <ProductionTree
+          savedFactory={props.loadedFactory}
+          setProductNodes={(updater) => {
+            const newNodes = updater(props.loadedFactory.productNodes);
+            props.setLoadedFactory({
+              id: props.loadedFactory.id,
+              productNodes: newNodes,
+            });
+          }}
+          setNewProduct={setNewProduct}
+        />
+      </TreeSettingsProvider>
     </div>
   );
 };

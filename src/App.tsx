@@ -9,6 +9,7 @@ import { LocalStorage } from "./components/localStorage/LocalStorage";
 import { NaviagationBar } from "./NavigationBar";
 import { RecipesProvider } from "./RecipesContext";
 import { Home } from "./Home";
+import { DirtyStateProvider } from "./DirtyStateContext";
 
 export const allProducts = allProductsJson;
 export const allRecipes = allRecipesJson;
@@ -24,32 +25,34 @@ export const App = () => {
   return (
     <div className="flex flex-col h-screen">
       <Router>
-        <NaviagationBar />
         <RecipesProvider>
-          <Routes>
-            <Route
-              path="/satisfactory-planner/"
-              element={
-                <Home
-                  savedFactories={savedFactories}
-                  setSavedFactories={setSavedFactories}
-                />
-              }
-            />
-            <Route
-              path="/satisfactory-planner/alt-recipes"
-              element={<AlternateRecipes />}
-            />
-            <Route
-              path="/satisfactory-planner/local-storage"
-              element={
-                <LocalStorage
-                  savedFactories={savedFactories}
-                  setSavedFactories={setSavedFactories}
-                />
-              }
-            />
-          </Routes>
+          <DirtyStateProvider>
+            <NaviagationBar />
+            <Routes>
+              <Route
+                path="/satisfactory-planner/"
+                element={
+                  <Home
+                    savedFactories={savedFactories}
+                    setSavedFactories={setSavedFactories}
+                  />
+                }
+              />
+              <Route
+                path="/satisfactory-planner/alt-recipes"
+                element={<AlternateRecipes />}
+              />
+              <Route
+                path="/satisfactory-planner/local-storage"
+                element={
+                  <LocalStorage
+                    savedFactories={savedFactories}
+                    setSavedFactories={setSavedFactories}
+                  />
+                }
+              />
+            </Routes>
+          </DirtyStateProvider>
         </RecipesProvider>
       </Router>
     </div>

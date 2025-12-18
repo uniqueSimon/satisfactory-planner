@@ -4,16 +4,21 @@ import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
 import { cn } from "@/lib/utils";
 import { useRecipes } from "@/RecipesContext";
 import { NumberBubble } from "@/reusableComp/NumberBubble";
+import { Button } from "../ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Tooltip } from "../ui/tooltip";
+import { useEditMode } from "@/context/TreeSettingsContext";
 
 export const ProductNode = (props: {
   node: ProductNodeNested;
   weights: Weights;
-  showWeights: boolean;
   onSelectRecipe: (id: string, recipe: string) => void;
   onSelectNew: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
-  onDetachSubtree: (id: string) => void;
+  onMoveToSubtree: (id: string) => void;
+  onReattachSubtree: (id: string) => void;
 }) => {
+  const { editMode, showWeights } = useEditMode();
   const { availableRecipes } = useRecipes();
   const { id, name, buildRecipe, rate, type, subRootPointer } = props.node;
   const recipes = availableRecipes.filter((x) => x.product.name === name);
@@ -40,21 +45,47 @@ export const ProductNode = (props: {
       {(type === "SUB_ROOT" || type === "ROOT") && (
         <div className="text-xs pt-1">{label}</div>
       )}
-      <NumberBubble show={props.showWeights} number={minWeight * rate}>
+      <NumberBubble show={showWeights} number={minWeight * rate}>
         <IconWithTooltip item={name} />
       </NumberBubble>
+      {editMode && (
+        <>
+          {type === "SUB_ROOT" ? (
+            <Tooltip tooltip="Reattach subtree">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-6 h-6 p-0 text-gray-500 hover:text-gray-800"
+                onClick={() => props.onReattachSubtree(id)}
+              >
+                <ArrowLeft size={16} />
+              </Button>
+            </Tooltip>
+          ) : type !== "ROOT" && !subRootPointer ? (
+            <Tooltip tooltip="Move to or create subtree">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-6 h-6 p-0 text-gray-500 hover:text-gray-800"
+                onClick={() => props.onMoveToSubtree(id)}
+              >
+                <ArrowRight size={16} />
+              </Button>
+            </Tooltip>
+          ) : null}
+        </>
+      )}
       {buildRecipe ? (
         <RecipeSelected
           recipes={recipesWithWeights}
           rate={props.node.rate}
           nodeType={props.node.type}
           selectedRecipe={buildRecipe}
-          showWeights={props.showWeights}
+          showWeights={showWeights}
           onClear={() => props.onClearRecipe(id)}
-          onDetachSubtree={() => props.onDetachSubtree(id)}
           onSelectNew={(recipe) => props.onSelectNew(id, recipe)}
         />
-      ) : subRootPointer || recipes.length === 0 ? null : (
+      ) : subRootPointer || recipes.length === 0 || !editMode ? null : (
         <RecipeToAdd
           rate={props.node.rate}
           recipes={recipesWithWeights}

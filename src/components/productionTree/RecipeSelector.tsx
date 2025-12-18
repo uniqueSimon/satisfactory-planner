@@ -1,4 +1,4 @@
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Plus, RotateCcw, Trash } from "lucide-react";
 import { NodeType, RecipeWithWeight } from "../../interfaces";
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import { productDisplayNameMapping } from "@/App";
 import { Icon } from "@/reusableComp/Icon";
 import { Tooltip } from "@/components/ui/tooltip";
 import { NumberBubble } from "@/reusableComp/NumberBubble";
+import { useEditMode } from "@/context/TreeSettingsContext";
 
 export const RecipeToAdd = (props: {
   recipes: RecipeWithWeight[];
@@ -18,11 +19,17 @@ export const RecipeToAdd = (props: {
   onSelect: (recipe: string) => void;
 }) => (
   <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <button className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition">
-        <Plus size={16} />
-      </button>
-    </DropdownMenuTrigger>
+    <Tooltip tooltip="Add recipe">
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-6 h-6 p-0 text-gray-500 hover:text-gray-800"
+        >
+          <Plus size={16} />
+        </Button>
+      </DropdownMenuTrigger>
+    </Tooltip>
 
     <DropdownMenuContent align="start">
       {props.recipes.map(({ recipe, weight }) => (
@@ -46,9 +53,9 @@ export const RecipeSelected = (props: {
   rate: number;
   showWeights: boolean;
   onClear: () => void;
-  onDetachSubtree: () => void;
   onSelectNew: (recipe: string) => void;
 }) => {
+  const { editMode } = useEditMode();
   const { recipe, weight } = props.recipes.find(
     (r) => r.recipe.recipeName === props.selectedRecipe
   )!;
@@ -73,45 +80,54 @@ export const RecipeSelected = (props: {
           </Tooltip>
         </NumberBubble>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-6 h-6 p-0 text-gray-500 hover:text-gray-800"
-          >
-            <MoreHorizontal size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => props.onClear()}>
-            Remove recipe
-          </DropdownMenuItem>
-          {props.nodeType !== "ROOT" && props.nodeType !== "SUB_ROOT" && (
-            <DropdownMenuItem onClick={() => props.onDetachSubtree()}>
-              Create / Join to subtree
-            </DropdownMenuItem>
+      {editMode && (
+        <div className="flex">
+          <Tooltip tooltip="Delete recipe with all its ingredients">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-6 h-6 p-0 text-gray-500 hover:text-gray-800"
+              onClick={props.onClear}
+            >
+              <Trash size={16} />
+            </Button>
+          </Tooltip>
+          {props.recipes.length > 1 && (
+            <DropdownMenu>
+              <Tooltip tooltip="Change recipe">
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-6 h-6 p-0 text-gray-500 hover:text-gray-800"
+                  >
+                    <RotateCcw size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+              </Tooltip>
+              <DropdownMenuContent align="start">
+                <div className="text-xs border-b pb-1">Change recipe to:</div>
+                {props.recipes
+                  .filter((r) => r.recipe.recipeName !== props.selectedRecipe)
+                  .map(({ recipe, weight }) => (
+                    <DropdownMenuItem
+                      key={recipe.recipeName}
+                      onClick={() => props.onSelectNew(recipe.recipeName)}
+                    >
+                      <Icon item={recipe.producedIn} />
+                      <div className="ml-2">{recipe.displayName}</div>
+                      {props.showWeights && (
+                        <div className="text-xs pt-1">
+                          ({(weight * props.rate).toFixed(1)})
+                        </div>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
-          {/* Change recipe submenu */}
-          {props.recipes.length > 1 && <div className="border-t my-1" />}
-          {props.recipes
-            .filter((r) => r.recipe.recipeName !== props.selectedRecipe)
-            .map(({ recipe, weight }) => (
-              <DropdownMenuItem
-                key={recipe.recipeName}
-                onClick={() => props.onSelectNew(recipe.recipeName)}
-              >
-                <Icon item={recipe.producedIn} />
-                <div className="ml-2">Change to {recipe.displayName}</div>
-                {props.showWeights && (
-                  <div className="text-xs pt-1">
-                    ({(weight * props.rate).toFixed(1)})
-                  </div>
-                )}
-              </DropdownMenuItem>
-            ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </div>
+      )}
     </div>
   );
 };

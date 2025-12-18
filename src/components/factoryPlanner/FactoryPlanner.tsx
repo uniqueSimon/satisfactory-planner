@@ -13,7 +13,8 @@ export const FactoryPlanner = (props: {
   savedFactories: Cluster[];
   setSavedFactories: (newValue: React.SetStateAction<Cluster[]>) => void;
   loadedFactory: SavedFactory | null;
-  setLoadedFactory: (factory: SavedFactory | null) => void;
+  setLoadedFactory: (factory: SavedFactory) => void;
+  removeLoadedFactory: () => void;
   setNewInCluster: (clusterId: string) => void;
 }) => {
   const [hoveredFactoryId, setHoveredFactoryId] = useState<string | null>();
@@ -66,9 +67,12 @@ export const FactoryPlanner = (props: {
             setHoveredFactoryId={setHoveredFactoryId}
             loadedFactory={props.loadedFactory}
             onDropIntoCluster={(sourceId) => onDropIntoCluster(sourceId, index)}
-            onRemoveCluster={() =>
-              props.setSavedFactories((prev) => prev.filter((_, i) => i !== index))
-            }
+            onRemoveCluster={() => {
+              props.setSavedFactories((prev) =>
+                prev.filter((_, i) => i !== index)
+              );
+              props.removeLoadedFactory();
+            }}
           />
         ))}
         <Button

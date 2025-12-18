@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import { ProductNode, SavedFactory } from "../../interfaces";
 import { ProductionSetupForm } from "./ProductionSetupForm";
 import { RecursiveTree } from "./RecursiveTree";
@@ -10,24 +10,28 @@ import { moveToSubtree } from "./treeOperations/moveToSubtree";
 import { useRecipes } from "@/RecipesContext";
 import { ConfigForMod } from "./ConfigForMod";
 import { updateTreeRates } from "./treeOperations/updateTreeRates";
+import { calculateRootRate } from "./treeOperations/calculateRootRate";
 import { calculateProductWeights, maxRates } from "@/calculateProductWeights";
 import { useLocalStorage } from "@/reusableComp/useLocalStorage";
-import { WeightingPoints } from "./WeightingPoints";
+import { TreeSettings } from "./TreeSettings";
+import { reattachSubTree } from "./treeOperations/reattachSubTree";
+import { removeDisconnectedBranches } from "./treeOperations/removeDisconnectedBranches";
 
 export const ProductionTree = (props: {
   savedFactory: SavedFactory;
-  setProductNodes: (
-    nodes: ProductNode[] | ((prev: ProductNode[]) => ProductNode[])
-  ) => void;
+  setProductNodes: (updater: (prev: ProductNode[]) => ProductNode[]) => void;
+  setNewProduct: (node: ProductNode) => void;
 }) => {
   const { availableRecipes } = useRecipes();
   const nodes = props.savedFactory.productNodes;
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [containerElement, setContainerElement] = useState<HTMLElement | null>(null);
-  
-  useEffect(() => {
-    setContainerElement(containerRef.current);
-  }, [containerRef.current]);
+  const [containerElement, setContainerElement] = useState<HTMLElement | null>(
+    null
+  );
+
+  // Use callback ref to properly track when the container is mounted/unmounted
+  const containerRef = (node: HTMLDivElement | null) => {
+    setContainerElement(node);
+  };
 
   const root = nodes.find((node) => node.type === "ROOT");
 
@@ -42,49 +46,66 @@ export const ProductionTree = (props: {
       (r) => r.product.name === product && !r.isAlternate
     )!;
     const rateOneMachine = (baseRecipe.product.amount / baseRecipe.time) * 60;
-    props.setProductNodes([
-      {
-        id: uuidv4(),
-        name: product,
-        rate: rateOneMachine,
-        type: "ROOT",
-        children: [],
-      },
-    ]);
-  };
-  const setOutputRate = (rate: number) => {
-    props.setProductNodes((currentNodes) => {
-      const currentRoot = currentNodes.find((node) => node.type === "ROOT")!;
-      return updateTreeRates(currentNodes, rate, currentRoot, availableRecipes);
+    props.setNewProduct({
+      id: uuidv4(),
+      name: product,
+      rate: rateOneMachine,
+      type: "ROOT",
+      children: [],
     });
   };
+
+  const onSetOutputRate = (rate: number) =>
+    props.setProductNodes((currentNodes) =>
+      updateTreeRates(currentNodes, availableRecipes, rate)
+    );
+
   const onSelectRecipe = (id: string, recipe: string) =>
     props.setProductNodes((currentNodes) =>
       selectRecipe(currentNodes, id, recipe, availableRecipes)
     );
+
   const onSelectNew = (id: string, recipe: string) =>
     props.setProductNodes((currentNodes) => {
       const cleared = clearRecipe(currentNodes, id);
-      const withNewRecipe = selectRecipe(cleared, id, recipe, availableRecipes);
-      return withNewRecipe;
+      return selectRecipe(cleared, id, recipe, availableRecipes);
     });
-  const onClearRecipe = (id: string) => {
-    props.setProductNodes((currentNodes) => clearRecipe(currentNodes, id));
-  };
-  const onDetachSubtree = (id: string) => {
-    props.setProductNodes((currentNodes) =>
-      moveToSubtree(currentNodes, id, availableRecipes)
-    );
-  };
+
+  const onClearRecipe = (id: string) =>
+    props.setProductNodes((currentNodes) => {
+      const remainingNodes = clearRecipe(currentNodes, id);
+      return removeDisconnectedBranches(remainingNodes);
+    });
+
+  const onUpdateRate = (nodeId: string, newRate: number) =>
+    props.setProductNodes((currentNodes) => {
+      const rootRate = calculateRootRate(
+        currentNodes,
+        nodeId,
+        newRate,
+        availableRecipes
+      );
+      return updateTreeRates(currentNodes, availableRecipes, rootRate);
+    });
+
+  const onMoveToSubtree = (id: string) =>
+    props.setProductNodes((currentNodes) => {
+      const changedStructure = moveToSubtree(currentNodes, id);
+      const remainingNodes = removeDisconnectedBranches(changedStructure);
+      return updateTreeRates(remainingNodes, availableRecipes);
+    });
+
+  const onReattachSubtree = (id: string) =>
+    props.setProductNodes((currentNodes) => {
+      const newNodes = reattachSubTree(currentNodes, id);
+      const remainingNodes = removeDisconnectedBranches(newNodes);
+      return updateTreeRates(remainingNodes, availableRecipes);
+    });
 
   const allResources = [...maxRates.keys()];
   const [excludedResources, setExcludedResources] = useLocalStorage<string[]>(
     "excluded-resources",
     []
-  );
-  const [showWeights, setShowWeights] = useLocalStorage<boolean>(
-    "showWeights",
-    false
   );
   const weights = calculateProductWeights(excludedResources);
 
@@ -96,16 +117,14 @@ export const ProductionTree = (props: {
           rate={root?.rate ?? 0}
           rootRecipe={rootRecipe}
           setProduct={setProductToProduce}
-          setRate={setOutputRate}
-        />
-        <WeightingPoints
-          showWeights={showWeights}
-          setShowWeights={setShowWeights}
-          resources={allResources}
-          value={excludedResources}
-          onChange={setExcludedResources}
+          setRate={onSetOutputRate}
         />
         <ConfigForMod nodes={nodes} />
+        <TreeSettings
+          resources={allResources}
+          excludedResources={excludedResources}
+          setExcludedResources={setExcludedResources}
+        />
         {forest && (
           <div ref={containerRef} className="relative flex flex-wrap">
             <div className="mb-10">
@@ -114,10 +133,11 @@ export const ProductionTree = (props: {
                 onClearRecipe={onClearRecipe}
                 onSelectRecipe={onSelectRecipe}
                 onSelectNew={onSelectNew}
-                onDetachSubtree={onDetachSubtree}
+                onUpdateRate={onUpdateRate}
                 container={containerElement}
                 weights={weights}
-                showWeights={showWeights}
+                onMoveToSubtree={onMoveToSubtree}
+                onReattachSubtree={onReattachSubtree}
               />
             </div>
             {forest.subTrees.map((subTree, i) => (
@@ -127,10 +147,11 @@ export const ProductionTree = (props: {
                   onClearRecipe={onClearRecipe}
                   onSelectRecipe={onSelectRecipe}
                   onSelectNew={onSelectNew}
-                  onDetachSubtree={onDetachSubtree}
+                  onUpdateRate={onUpdateRate}
                   container={containerElement}
                   weights={weights}
-                  showWeights={showWeights}
+                  onMoveToSubtree={onMoveToSubtree}
+                  onReattachSubtree={onReattachSubtree}
                 />
               </div>
             ))}

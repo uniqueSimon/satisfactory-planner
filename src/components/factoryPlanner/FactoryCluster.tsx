@@ -9,6 +9,8 @@ import { Factory } from "./Factory";
 import { RateBalance } from "./accumulateRates";
 import { Pencil, Save, X } from "lucide-react";
 import { Cluster, SavedFactory } from "@/interfaces";
+import { RemoveClusterDialog } from "../ConfirmationDialogs";
+import { useDirtyState } from "@/DirtyStateContext";
 
 const useDropable = (
   cluster: SavedFactory[],
@@ -39,12 +41,14 @@ export const FactoryCluster = (props: {
   onDropIntoCluster: (sourceId: string) => void;
   onRemoveCluster: () => void;
   loadedFactory: SavedFactory | null;
-  setLoadedFactory: (factory: SavedFactory | null) => void;
+  setLoadedFactory: (factory: SavedFactory) => void;
   setNewInCluster: (clusterId: string) => void;
 }) => {
+  const { isDirty } = useDirtyState();
   const [hoveredAccumulatedProduct, setHoveredAccumulatedProduct] = useState<
     string | null
   >(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const refDropable = useDropable(
     props.cluster.factories,
     props.onDropIntoCluster
@@ -101,6 +105,11 @@ export const FactoryCluster = (props: {
     props.setLoadedFactory(initialFactory);
     props.setNewInCluster(props.cluster.id);
   };
+  const onDeleteCluster = () =>
+    props.cluster.factories.length > 0
+      ? setShowDeleteDialog(true)
+      : props.onRemoveCluster();
+
   return (
     <Card>
       <CardHeader>
@@ -109,7 +118,12 @@ export const FactoryCluster = (props: {
             title={props.cluster.title}
             submit={(title) => props.updateCluster({ ...props.cluster, title })}
           />
-          <Button variant="outline" size="icon" onClick={props.onRemoveCluster}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onDeleteCluster}
+            disabled={isDirty}
+          >
             <X />
           </Button>
         </div>
@@ -152,6 +166,14 @@ export const FactoryCluster = (props: {
           setHoveredAccumulatedProduct={setHoveredAccumulatedProduct}
         />
       </CardContent>
+      <RemoveClusterDialog
+        open={showDeleteDialog}
+        onConfirm={() => {
+          props.onRemoveCluster();
+          setShowDeleteDialog(false);
+        }}
+        onCancel={() => setShowDeleteDialog(false)}
+      />
     </Card>
   );
 };
@@ -178,7 +200,7 @@ const EditableTitle = (props: {
       />
     </div>
   ) : (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center font-bold">
       {props.title}
       <Pencil
         className="cursor-pointer transition-colors duration-200 hover:bg-gray-200"

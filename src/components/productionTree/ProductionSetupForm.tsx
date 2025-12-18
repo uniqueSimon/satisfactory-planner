@@ -37,7 +37,7 @@ export const ProductionSetupForm = (props: Props) => {
   return (
     <div className="flex flex-col md:flex-row gap-3 items-center bg-white border rounded-xl shadow-sm p-4">
       {/* Product Select */}
-      <div className="flex flex-col w-full md:w-auto">
+      <div className="flex flex-col w-full md:w-auto mr-3">
         <label className="text-xs font-medium text-gray-600 mb-1">
           Product
         </label>
@@ -50,7 +50,7 @@ export const ProductionSetupForm = (props: Props) => {
       </div>
 
       {/* Rate Input */}
-      <div className="flex flex-col w-28">
+      <div className="flex flex-col min-w-30">
         <label className="text-xs font-medium text-gray-600 mb-1">Rate</label>
         <div className="flex items-center border rounded-md px-2">
           <Input
@@ -59,15 +59,15 @@ export const ProductionSetupForm = (props: Props) => {
             min={0}
             value={props.rate}
             onChange={(e) => props.setRate(+e.target.value)}
-            className="w-full border-none focus-visible:ring-0 text-sm"
+            className="border-none focus-visible:ring-0 text-sm"
             disabled={!props.rootRecipe}
           />
-          <span className="text-gray-500 text-xs ml-1">/min</span>
+          <span className="text-gray-500 text-xs">/min</span>
         </div>
       </div>
 
       {/* Machine Count Input */}
-      <div className="flex flex-col w-28">
+      <div className="flex flex-col min-w-20">
         <label className="text-xs font-medium text-gray-600 mb-1">
           Machines
         </label>

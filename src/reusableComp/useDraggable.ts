@@ -10,10 +10,12 @@ import {
 
 export const useDraggable = (
   id: string,
-  onDrop: (sourceId: string, targetId: string, edge: "left" | "right") => void
+  onDrop: (sourceId: string, targetId: string, edge: "left" | "right") => void,
+  disabled:boolean
 ) => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (disabled) return;
     const element = ref.current!;
     const cleanupDraggable = draggable({
       element,
@@ -42,6 +44,6 @@ export const useDraggable = (
       cleanupDraggable();
       cleanupDropTarget();
     };
-  }, [id, onDrop]);
+  }, [id, onDrop, disabled]);
   return ref;
 };
