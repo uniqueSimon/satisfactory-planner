@@ -114,6 +114,50 @@
     "isAlternate": false
   },
   {
+    "recipeName": "PackagedRocketFuel",
+    "displayName": "Packaged Rocket Fuel",
+    "product": {
+      "name": "PackagedRocketFuel",
+      "amount": 1
+    },
+    "ingredients": [
+      {
+        "name": "RocketFuel",
+        "amount": 2
+      },
+      {
+        "name": "GasTank",
+        "amount": 1
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
+    "tier": 3,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageRocketFuel",
+    "displayName": "Unpackage Rocket Fuel",
+    "product": {
+      "name": "RocketFuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "PackagedRocketFuel",
+        "amount": 1
+      },
+      {
+        "name": "GasTank",
+        "amount": -1
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
+    "tier": 3,
+    "isAlternate": false
+  },
+  {
     "recipeName": "Alternate_IonizedFuel_Dark",
     "displayName": "Alternate: Dark-Ion Fuel",
     "product": {
@@ -317,6 +361,50 @@
     ],
     "time": 24,
     "producedIn": "OilRefinery",
+    "tier": 3,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "PackagedIonizedFuel",
+    "displayName": "Packaged Ionized Fuel",
+    "product": {
+      "name": "PackagedIonizedFuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "IonizedFuel",
+        "amount": 4
+      },
+      {
+        "name": "GasTank",
+        "amount": 2
+      }
+    ],
+    "time": 3,
+    "producedIn": "Packager",
+    "tier": 3,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageIonizedFuel",
+    "displayName": "Unpackage Ionized Fuel",
+    "product": {
+      "name": "IonizedFuel",
+      "amount": 4
+    },
+    "ingredients": [
+      {
+        "name": "PackagedIonizedFuel",
+        "amount": 2
+      },
+      {
+        "name": "GasTank",
+        "amount": -2
+      }
+    ],
+    "time": 3,
+    "producedIn": "Packager",
     "tier": 3,
     "isAlternate": false
   },
@@ -929,6 +1017,50 @@
     "isAlternate": false
   },
   {
+    "recipeName": "PackagedTurboFuel",
+    "displayName": "Packaged Turbofuel",
+    "product": {
+      "name": "TurboFuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "LiquidTurboFuel",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 6,
+    "producedIn": "Packager",
+    "tier": 6,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageTurboFuel",
+    "displayName": "Unpackage Turbofuel",
+    "product": {
+      "name": "LiquidTurboFuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "TurboFuel",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 6,
+    "producedIn": "Packager",
+    "tier": 6,
+    "isAlternate": false
+  },
+  {
     "recipeName": "Alternate_Coal_1",
     "displayName": "Alternate: Charcoal",
     "product": {
@@ -1453,6 +1585,28 @@
     "isAlternate": false
   },
   {
+    "recipeName": "Fuel",
+    "displayName": "Packaged Fuel",
+    "product": {
+      "name": "Fuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "LiquidFuel",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 3,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
     "recipeName": "LiquidBiofuel",
     "displayName": "Liquid Biofuel",
     "product": {
@@ -1471,6 +1625,204 @@
     ],
     "time": 4,
     "producedIn": "OilRefinery",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "PackagedBiofuel",
+    "displayName": "Packaged Liquid Biofuel",
+    "product": {
+      "name": "PackagedBiofuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "LiquidBiofuel",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 3,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "PackagedCrudeOil",
+    "displayName": "Packaged Oil",
+    "product": {
+      "name": "PackagedOil",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "LiquidOil",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 4,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "PackagedOilResidue",
+    "displayName": "Packaged Heavy Oil Residue",
+    "product": {
+      "name": "PackagedOilResidue",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "HeavyOilResidue",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 4,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "PackagedWater",
+    "displayName": "Packaged Water",
+    "product": {
+      "name": "PackagedWater",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "Water",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 2,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageBioFuel",
+    "displayName": "Unpackage Liquid Biofuel",
+    "product": {
+      "name": "LiquidBiofuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "PackagedBiofuel",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 2,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageFuel",
+    "displayName": "Unpackage Fuel",
+    "product": {
+      "name": "LiquidFuel",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "Fuel",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 2,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageOil",
+    "displayName": "Unpackage Oil",
+    "product": {
+      "name": "LiquidOil",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "PackagedOil",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 2,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageOilResidue",
+    "displayName": "Unpackage Heavy Oil Residue",
+    "product": {
+      "name": "HeavyOilResidue",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "PackagedOilResidue",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 6,
+    "producedIn": "Packager",
+    "tier": 5,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageWater",
+    "displayName": "Unpackage Water",
+    "product": {
+      "name": "Water",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "PackagedWater",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
     "tier": 5,
     "isAlternate": false
   },
@@ -1757,6 +2109,28 @@
     "isAlternate": false
   },
   {
+    "recipeName": "PackagedAlumina",
+    "displayName": "Packaged Alumina Solution",
+    "product": {
+      "name": "PackagedAlumina",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "AluminaSolution",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
+    "tier": 7,
+    "isAlternate": false
+  },
+  {
     "recipeName": "IngotAluminum",
     "displayName": "Aluminum Ingot",
     "product": {
@@ -1819,6 +2193,28 @@
     ],
     "time": 120,
     "producedIn": "ManufacturerMk1",
+    "tier": 7,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageAlumina",
+    "displayName": "Unpackage Alumina Solution",
+    "product": {
+      "name": "AluminaSolution",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "PackagedAlumina",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -2
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
     "tier": 7,
     "isAlternate": false
   },
@@ -2753,6 +3149,28 @@
     "isAlternate": false
   },
   {
+    "recipeName": "PackagedNitricAcid",
+    "displayName": "Packaged Nitric Acid",
+    "product": {
+      "name": "PackagedNitricAcid",
+      "amount": 1
+    },
+    "ingredients": [
+      {
+        "name": "NitricAcid",
+        "amount": 1
+      },
+      {
+        "name": "GasTank",
+        "amount": 1
+      }
+    ],
+    "time": 2,
+    "producedIn": "Packager",
+    "tier": 8,
+    "isAlternate": false
+  },
+  {
     "recipeName": "SpaceElevatorPart_9",
     "displayName": "Nuclear Pasta",
     "product": {
@@ -2771,6 +3189,28 @@
     ],
     "time": 120,
     "producedIn": "HadronCollider",
+    "tier": 8,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageNitricAcid",
+    "displayName": "Unpackage Nitric Acid",
+    "product": {
+      "name": "NitricAcid",
+      "amount": 1
+    },
+    "ingredients": [
+      {
+        "name": "PackagedNitricAcid",
+        "amount": 1
+      },
+      {
+        "name": "GasTank",
+        "amount": -1
+      }
+    ],
+    "time": 3,
+    "producedIn": "Packager",
     "tier": 8,
     "isAlternate": false
   },
@@ -2973,6 +3413,28 @@
     "isAlternate": false
   },
   {
+    "recipeName": "PackagedSulfuricAcid",
+    "displayName": "Packaged Sulfuric Acid",
+    "product": {
+      "name": "PackagedSulfuricAcid",
+      "amount": 2
+    },
+    "ingredients": [
+      {
+        "name": "SulfuricAcid",
+        "amount": 2
+      },
+      {
+        "name": "FluidCanister",
+        "amount": 2
+      }
+    ],
+    "time": 3,
+    "producedIn": "Packager",
+    "tier": 7,
+    "isAlternate": false
+  },
+  {
     "recipeName": "SpaceElevatorPart_7",
     "displayName": "Assembly Director System",
     "product": {
@@ -3017,6 +3479,28 @@
     ],
     "time": 16,
     "producedIn": "ManufacturerMk1",
+    "tier": 7,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageSulfuricAcid",
+    "displayName": "Unpackage Sulfuric Acid",
+    "product": {
+      "name": "SulfuricAcid",
+      "amount": 1
+    },
+    "ingredients": [
+      {
+        "name": "PackagedSulfuricAcid",
+        "amount": 1
+      },
+      {
+        "name": "FluidCanister",
+        "amount": -1
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
     "tier": 7,
     "isAlternate": false
   },
@@ -3279,6 +3763,50 @@
     ],
     "time": 1,
     "producedIn": "ConstructorMk1",
+    "tier": 8,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "PackagedNitrogen",
+    "displayName": "Packaged Nitrogen Gas",
+    "product": {
+      "name": "PackagedNitrogenGas",
+      "amount": 1
+    },
+    "ingredients": [
+      {
+        "name": "NitrogenGas",
+        "amount": 4
+      },
+      {
+        "name": "GasTank",
+        "amount": 1
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
+    "tier": 8,
+    "isAlternate": false
+  },
+  {
+    "recipeName": "UnpackageNitrogen",
+    "displayName": "Unpackage Nitrogen Gas",
+    "product": {
+      "name": "NitrogenGas",
+      "amount": 4
+    },
+    "ingredients": [
+      {
+        "name": "PackagedNitrogenGas",
+        "amount": 1
+      },
+      {
+        "name": "GasTank",
+        "amount": -1
+      }
+    ],
+    "time": 1,
+    "producedIn": "Packager",
     "tier": 8,
     "isAlternate": false
   },

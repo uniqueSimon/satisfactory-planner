@@ -28,6 +28,7 @@ const ALLOWED_MACHINES = new Set([
   "GeneratorNuclear",
   "GeneratorCoal",
   "GeneratorFuel",
+  "Packager",
 ]);
 
 const EXCLUDED_CATEGORIES = new Set(["Buildings", "Vehicle"]);
