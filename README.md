@@ -27,3 +27,9 @@ No installation required—just open it in your browser.
 
 Got questions, feedback, or suggestions? Join the conversation:  
 [![Discord](https://img.shields.io/discord/1234567890?logo=discord&style=flat&color=5865F2&label=Discord)](https://discord.gg/Yzgw9yQK)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
