@@ -1,4 +1,5 @@
 import { Plus, RotateCcw, Trash } from "lucide-react";
+import { useState } from "react";
 import { NodeType, RecipeWithWeight } from "../../interfaces";
 import {
   DropdownMenu,
@@ -54,18 +55,64 @@ export const RecipeSelected = (props: {
   showWeights: boolean;
   onClear: () => void;
   onSelectNew: (recipe: string) => void;
+  onRateChange: (newRate: number) => void;
 }) => {
   const { editMode } = useEditMode();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
+
   const { recipe, weight } = props.recipes.find(
     (r) => r.recipe.recipeName === props.selectedRecipe
   )!;
   const producedIn = productDisplayNameMapping.get(recipe.producedIn);
-  const machineCount =
-    props.rate / ((recipe.product.amount / recipe.time) * 60);
+  const ratePerMachine = (recipe.product.amount / recipe.time) * 60;
+  const machineCount = props.rate / ratePerMachine;
+
+  const handleClick = () => {
+    if (!editMode) return;
+    setEditValue(machineCount.toFixed(1));
+    setIsEditing(true);
+  };
+
+  const handleSubmit = () => {
+    const numValue = parseFloat(editValue);
+    if (!isNaN(numValue) && numValue > 0) {
+      props.onRateChange(numValue * ratePerMachine);
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
+    } else if (e.key === "Escape") {
+      setIsEditing(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="w-full h-0.5 mb-1 bg-gray-400" />
-      <div className="text-xs pt-1">{machineCount.toFixed(1)}</div>
+      {isEditing ? (
+        <input
+          type="number"
+          step="0.1"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSubmit}
+          onKeyDown={handleKeyDown}
+          autoFocus
+          className="text-xs w-12 text-center px-1 py-0.5 border border-primary rounded focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+      ) : (
+        <div
+          className={`text-xs pt-1 ${editMode ? "cursor-pointer hover:bg-gray-100 px-1 rounded" : ""}`}
+          onClick={handleClick}
+        >
+          {machineCount.toFixed(1)}
+        </div>
+      )}
       <div className="relative">
         <NumberBubble show={props.showWeights} number={weight * props.rate}>
           <Tooltip

@@ -22,7 +22,7 @@ export const LineBetween = (props: {
 }) => {
   const [coords, setCoords] = useState<Coordinates | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(0);
+  const [editValue, setEditValue] = useState("");
 
   useEffect(() => {
     if (!props.from || !props.to || !props.container) return;
@@ -79,12 +79,15 @@ export const LineBetween = (props: {
 
   const handleLabelClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setEditValue(props.rate);
+    setEditValue(String(props.rate));
     setIsEditing(true);
   };
 
   const handleSubmit = () => {
-    props.onRateChange(editValue);
+    const numValue = parseFloat(editValue);
+    if (!isNaN(numValue)) {
+      props.onRateChange(numValue);
+    }
     setIsEditing(false);
   };
 
@@ -142,7 +145,7 @@ export const LineBetween = (props: {
           type="number"
           step="0.1"
           value={editValue}
-          onChange={(e) => setEditValue(+e.target.value)}
+          onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleSubmit}
           onKeyDown={handleKeyDown}
           autoFocus

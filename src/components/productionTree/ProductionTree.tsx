@@ -1,7 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { ProductNode, SavedFactory } from "../../interfaces";
-import { ProductionSetupForm } from "./ProductionSetupForm";
 import { RecursiveTree } from "./RecursiveTree";
 import { buildTree } from "./treeOperations/buildTree";
 import { selectRecipe } from "./treeOperations/selectRecipe";
@@ -20,7 +18,6 @@ import { removeDisconnectedBranches } from "./treeOperations/removeDisconnectedB
 export const ProductionTree = (props: {
   savedFactory: SavedFactory;
   setProductNodes: (updater: (prev: ProductNode[]) => ProductNode[]) => void;
-  setNewProduct: (node: ProductNode) => void;
 }) => {
   const { availableRecipes } = useRecipes();
   const nodes = props.savedFactory.productNodes;
@@ -36,29 +33,6 @@ export const ProductionTree = (props: {
   const root = nodes.find((node) => node.type === "ROOT");
 
   const forest = nodes.length > 0 && root?.name ? buildTree(nodes) : null;
-
-  const rootRecipe = root?.buildRecipe
-    ? availableRecipes.find((r) => r.recipeName === root.buildRecipe)
-    : undefined;
-
-  const setProductToProduce = (product: string) => {
-    const baseRecipe = availableRecipes.find(
-      (r) => r.product.name === product && !r.isAlternate
-    )!;
-    const rateOneMachine = (baseRecipe.product.amount / baseRecipe.time) * 60;
-    props.setNewProduct({
-      id: uuidv4(),
-      name: product,
-      rate: rateOneMachine,
-      type: "ROOT",
-      children: [],
-    });
-  };
-
-  const onSetOutputRate = (rate: number) =>
-    props.setProductNodes((currentNodes) =>
-      updateTreeRates(currentNodes, availableRecipes, rate)
-    );
 
   const onSelectRecipe = (id: string, recipe: string) =>
     props.setProductNodes((currentNodes) =>
@@ -112,13 +86,6 @@ export const ProductionTree = (props: {
   return (
     <div className="flex-1 overflow-y-auto overflow-x-hidden">
       <div className="w-full bg-gray-50">
-        <ProductionSetupForm
-          product={root?.name ?? ""}
-          rate={root?.rate ?? 0}
-          rootRecipe={rootRecipe}
-          setProduct={setProductToProduce}
-          setRate={onSetOutputRate}
-        />
         <ConfigForMod nodes={nodes} />
         <TreeSettings
           resources={allResources}

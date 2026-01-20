@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ProductNodeNested, Weights } from "@/interfaces";
 import { RecipeSelected, RecipeToAdd } from "./RecipeSelector";
 import { IconWithTooltip } from "@/reusableComp/IconWithTooltip";
@@ -15,6 +16,7 @@ export const ProductNode = (props: {
   onSelectRecipe: (id: string, recipe: string) => void;
   onSelectNew: (id: string, recipe: string) => void;
   onClearRecipe: (id: string) => void;
+  onUpdateRate: (nodeId: string, newRate: number) => void;
   onMoveToSubtree: (id: string) => void;
   onReattachSubtree: (id: string) => void;
 }) => {
@@ -22,7 +24,32 @@ export const ProductNode = (props: {
   const { availableRecipes } = useRecipes();
   const { id, name, buildRecipe, rate, type, subRootPointer } = props.node;
   const recipes = availableRecipes.filter((x) => x.product.name === name);
-  const label = `${rate.toFixed(1)} /min`;
+
+  const [isEditingRate, setIsEditingRate] = useState(false);
+  const [editRateValue, setEditRateValue] = useState("");
+
+  const handleRateClick = () => {
+    if (!editMode) return;
+    setEditRateValue(rate.toFixed(1));
+    setIsEditingRate(true);
+  };
+
+  const handleRateSubmit = () => {
+    const numValue = parseFloat(editRateValue);
+    if (!isNaN(numValue) && numValue > 0) {
+      props.onUpdateRate(id, numValue);
+    }
+    setIsEditingRate(false);
+  };
+
+  const handleRateKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleRateSubmit();
+    } else if (e.key === "Escape") {
+      setIsEditingRate(false);
+    }
+  };
 
   const productWeights = props.weights.get(name);
   const minWeight = productWeights
@@ -43,7 +70,25 @@ export const ProductNode = (props: {
       )}
     >
       {(type === "SUB_ROOT" || type === "ROOT") && (
-        <div className="text-xs pt-1">{label}</div>
+        isEditingRate ? (
+          <input
+            type="number"
+            step="0.1"
+            value={editRateValue}
+            onChange={(e) => setEditRateValue(e.target.value)}
+            onBlur={handleRateSubmit}
+            onKeyDown={handleRateKeyDown}
+            autoFocus
+            className="text-xs w-16 text-center px-1 py-0.5 mt-1 border border-primary rounded focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        ) : (
+          <div
+            className={`text-xs pt-1 ${editMode ? "cursor-pointer hover:bg-gray-100 px-1 rounded" : ""}`}
+            onClick={handleRateClick}
+          >
+            {`${rate.toFixed(1)} /min`}
+          </div>
+        )
       )}
       <NumberBubble show={showWeights} number={minWeight * rate}>
         <IconWithTooltip item={name} />
@@ -84,6 +129,7 @@ export const ProductNode = (props: {
           showWeights={showWeights}
           onClear={() => props.onClearRecipe(id)}
           onSelectNew={(recipe) => props.onSelectNew(id, recipe)}
+          onRateChange={(newRate) => props.onUpdateRate(id, newRate)}
         />
       ) : subRootPointer || recipes.length === 0 || !editMode ? null : (
         <RecipeToAdd
